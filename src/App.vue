@@ -1,17 +1,42 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+    <Welome v-if="welcome" :welcome.sync="welcome"></Welome>
+    <div id="nav" v-if="!welcome">
+      <router-link to="/" tag="div">首頁</router-link>
+      <router-link to="/about" tag="div">About</router-link>
+    </div>
+    <router-view v-if="!welcome" />
+  </div>
 </template>
-
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import Welome from "./components/Welcome.vue";
+import express from "express";
+//var router = express.Router();
 export default {
-  name: 'App',
+  data() {
+    return {
+      welcome: true,
+    };
+  },
   components: {
-    HelloWorld
-  }
-}
+    Welome,
+  },
+  created() {
+    console.log(`test`);
+    console.log(express);
+    //console.log(router);
+    //router.get("/", function (req, res, next) {
+    //  db.sql("select * from T_SB_EMP", function (err, result) {
+    //    if (err) {
+    //      console.log(next);
+    //      console.log("sql错误", err);
+    //      return;
+    //    }
+    //    res.send(result);
+    //  });
+    //});
+  },
+};
 </script>
 
 <style>
@@ -21,6 +46,29 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+#nav {
+  top: 0px;
+  left: 0px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+}
+
+#nav div {
+  border: 1px solid;
+  font-weight: bold;
+  color: #2c3e50;
+  width: 200px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  margin: auto;
+}
+
+#nav div.router-link-exact-active {
+  background-color: #aaa;
+  color: #fff;
 }
 </style>
