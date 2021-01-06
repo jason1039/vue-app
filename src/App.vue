@@ -10,7 +10,7 @@
 </template>
 <script>
 import Welome from "./components/Welcome.vue";
-import express from "express";
+import cmd from "node-cmd";
 //var router = express.Router();
 export default {
   data() {
@@ -21,20 +21,37 @@ export default {
   components: {
     Welome,
   },
+  methods: {
+    connection() {
+      var name = this.userName;
+      var age = this.age;
+      console.log(this);
+      this.$http
+        .get(
+          "/api/user/addUser",
+          {
+            username: name,
+            age: age,
+          },
+          {}
+        )
+        .then((response) => {
+          console.log(response);
+        });
+    },
+  },
   created() {
-    console.log(`test`);
-    console.log(express);
-    //console.log(router);
-    //router.get("/", function (req, res, next) {
-    //  db.sql("select * from T_SB_EMP", function (err, result) {
-    //    if (err) {
-    //      console.log(next);
-    //      console.log("sql错误", err);
-    //      return;
-    //    }
-    //    res.send(result);
+    cmd.run(
+      "node C:\\Users\\User\\Documents\\GitHub\\father-app\\server\\index.js"
+    );
+    //knex
+    //  .select("*")
+    //  .from("T_SB_EMP")
+    //  .then(function (data) {
+    //    console.log(data);
     //  });
-    //});
+    //
+    //this.connection();
   },
 };
 </script>
