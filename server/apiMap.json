@@ -1,0 +1,17 @@
+{
+    "getCustomers": {
+        "type": "get",
+        "sql": "select * from Customer "
+    },
+    "addCustomer": {
+        "type": "post",
+        "columns": [
+            "CustomerName",
+            "CustomerProvince",
+            "CustomerArea",
+            "CustomerCity",
+            "CustomerAddr"
+        ],
+        "sql": "insert into Customer "
+    }
+}

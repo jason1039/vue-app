@@ -1,0 +1,62 @@
+{
+    "Customer": {
+        "ForeignTables": [
+            "CustomerNumber",
+            "CustomerContact"
+        ],
+        "Columns": [
+            "CustomerId",
+            "CustomerName",
+            "CustomerProvince",
+            "CustomerArea",
+            "CustomerCity",
+            "CustomerAddr",
+            "CreateDate"
+        ],
+        "Key": "CustomerId"
+    },
+    "CustomerNumber": {
+        "ForeignTables": [],
+        "Columns": [
+            "CustomerNumberId",
+            "CustomerId",
+            "CustomerPhoneNumber"
+        ],
+        "Key": "CustomerNumberId"
+    },
+    "CustomerContact": {
+        "ForeignTables": [
+            "CustomerContactNumber",
+            "CustomerContactRelation"
+        ],
+        "Columns": [
+            "CustomerContactId",
+            "CustomerId",
+            "ContactPersonName",
+            "Sex",
+            "AgeGroup",
+            "LikeLiqueur",
+            "Dwell"
+        ],
+        "Key": "CustomerContactId"
+    },
+    "CustomerContactNumber": {
+        "ForeignTables": [],
+        "Columns": [
+            "CustomerContactNumberId",
+            "CustomerContactId",
+            "CustomerContactPhoneNumber"
+        ],
+        "Key": "CustomerContactNumberId"
+    },
+    "CustomerContactRelation": {
+        "ForeignTables": [],
+        "Columns": [
+            "CustomerRelationId",
+            "CustomerContactId",
+            "RelationContent",
+            "RelationDate"
+        ],
+        "Key": "CustomerRelationId"
+    }
+}
