@@ -1,0 +1,5 @@
+drop table CustomerContactRelation
+drop table CustomerContactNumber
+drop table CustomerContact
+drop table CustomerNumber
+drop table Customer

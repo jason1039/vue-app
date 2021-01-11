@@ -12,6 +12,7 @@ function addAppGet(app, tableName) {
             app.get(`/${x.join('&')}`, function (req, res) {
                 let columns = req.query.columns;
                 let wheres = req.query.wheres;
+                wheres.Del_Flag = 'N';
                 let columns_str = getColumnsJoinString(joinCode, columns, tables);
                 let wheres_str = getWhereJoinString(joinCode, wheres, tables);
                 let query_str = `select ${columns_str} ${from_str} `;
@@ -74,6 +75,7 @@ function addAppPatch(app, tableName) {
             app.patch(`/${x.join('&')}`, function (req, res) {
                 let data = req.body.params.data;
                 let wheres = req.body.params.wheres;
+                wheres.Del_Flag = 'N';
                 let update_str = patchUpdateString(data_obj, where_obj, update_ary, tables, data, wheres);
                 sql.connect(config, function (connectERR) {
                     if (connectERR) console.log(connectERR);
@@ -117,6 +119,7 @@ function addAppPut(app, tableName) {
                 app.put(`/${y.join('&')}`, function (req, res) {
                     let data = req.body.params.data;
                     let wheres = req.body.params.wheres;
+                    wheres.Del_Flag = 'N';
                     let update_str = putUpdateString(data_obj, where_obj, update_ary, tables, data, wheres);
                     sql.connect(config, function (connectERR) {
                         if (connectERR) console.log(connectERR);

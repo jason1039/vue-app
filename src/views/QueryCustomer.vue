@@ -16,12 +16,6 @@
         :chinaProvince.sync="QuerySelector.chinaProvince"
       ></chinaProvince>
       <div class="col-2 text-left Subject">客戶位置(市)</div>
-      <!-- <city
-        :citys="AdministrativeDistrict.city"
-        class_str="col-2"
-        :city.sync="QuerySelector.city"
-        :province.sync="QuerySelector.province"
-      ></city> -->
       <div class="col-2 text-left Subject">客戶位置(區)</div>
       <select class="col-2" v-model="QuerySelector.area">
         <option value="">請選擇...</option>

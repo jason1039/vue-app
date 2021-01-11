@@ -3,9 +3,7 @@
     <h1>新增客戶</h1>
     <div class="row">
       <div class="col-4">客戶名稱</div>
-      <input type="text" class="col-6 bg-red" />
-      <div class="col-4">客戶地址</div>
-      <input type="text" class="col-6 bg-red" />
+      <input type="text" class="col-16" />
       <div class="col-4" v-if="chinaShow.chinaProvince">客戶位置(省)</div>
       <chinaProvince
         v-if="chinaShow.chinaProvince"
@@ -30,8 +28,31 @@
         :chinaProvince.sync="AddData.chinaProvince"
         :chinaCity.sync="AddData.chinaCity"
       ></chinaArea>
+      <div class="col-4" v-if="chinaShow.chinaTown">客戶位置(街)</div>
+      <chinaTown
+        v-if="chinaShow.chinaTown"
+        :chinaTowns="AdministrativeDistrict.town"
+        class_str="col-6"
+        :chinaArea.sync="AddData.chinaArea"
+        :chinaProvince.sync="AddData.chinaProvince"
+        :chinaCity.sync="AddData.chinaCity"
+        :chinaTown.sync="AddData.chinaTown"
+      ></chinaTown>
+      <div class="col-4">客戶地址</div>
+      <input type="text" class="col-6" />
     </div>
-    <div class="row"></div>
+    <h3>聯絡人</h3>
+    <div class="row">
+      <CustomerContact
+        v-for="(item, index) in AddData.CustomerContact"
+        :ContactPersonName.sync="item.ContactPersonName"
+        :Sex.sync="item.Sex"
+        :AgeGroup.sync="item.AgeGroup"
+        :LikeLiqueur.sync="item.LikeLiqueur"
+        :Dwell.sync="item.Dwell"
+        :key="'contact_' + index"
+      ></CustomerContact>
+    </div>
   </div>
 </template>
 <script>
@@ -39,6 +60,8 @@ import province_city_china from "province-city-china/data";
 import chinaProvince from "../components/chinaProvince.vue";
 import chinaCity from "../components/chinaCity.vue";
 import chinaArea from "../components/chinaArea.vue";
+import chinaTown from "../components/chinaTown.vue";
+import CustomerContact from "../components/CustomerContact.vue";
 export default {
   data() {
     return {
@@ -51,6 +74,7 @@ export default {
         chinaTown: ``,
         CustomerAddr: ``,
         code: ``,
+        CustomerContact: [],
       },
       chinaShow: {
         chinaProvince: true,
@@ -60,49 +84,79 @@ export default {
       },
     };
   },
-  methods: {},
+  methods: {
+    async computeCity() {
+      if (
+        !this.$data.AdministrativeDistrict.city.filter(
+          (x) => x.province == this.$data.AddData.chinaProvince
+        ).length
+      ) {
+        this.$data.AddData.chinaCity = "01";
+        this.$data.chinaShow.chinaCity = false;
+      } else {
+        this.$data.AddData.chinaCity = "";
+        this.$data.chinaShow.chinaCity = true;
+      }
+      await this.computeArea();
+    },
+    async computeArea() {
+      if (
+        !this.$data.AdministrativeDistrict.area.filter(
+          (x) =>
+            x.province == this.$data.AddData.chinaProvince &&
+            x.city == this.$data.AddData.chinaCity
+        ).length
+      ) {
+        this.$data.AddData.chinaArea = "01";
+        this.$data.chinaShow.chinaArea = false;
+      } else {
+        this.$data.AddData.chinaArea = "";
+        this.$data.chinaShow.chinaArea = true;
+      }
+      await this.computeTown();
+    },
+    async computeTown() {
+      if (
+        !this.$data.AdministrativeDistrict.town.filter(
+          (x) =>
+            x.province == this.$data.AddData.chinaProvince &&
+            x.city == this.$data.AddData.chinaCity &&
+            x.area == this.$data.AddData.chinaArea
+        ).length
+      ) {
+        this.$data.AddData.chinaTown = "01";
+        this.$data.chinaShow.chinaTown = false;
+      } else {
+        this.$data.AddData.chinaTown = "";
+        this.$data.chinaShow.chinaTown = true;
+      }
+    },
+    pushContact() {
+      this.$data.AddData.CustomerContact.push({});
+      // {
+      //   Sex: "M",
+      //   AgeGroup: 2,
+      //   LikeLiqueur: "Y",
+      //   Dwell: "",
+      // }
+    },
+  },
   watch: {
     "AddData.chinaProvince": {
-      handler: function () {
-        if (
-          !this.$data.AdministrativeDistrict.city.filter(
-            (x) => x.code == this.$data.AddData.chinaProvince
-          ).length
-        ) {
-          this.$data.AddData.chinaCity = "01";
-          this.$data.chinaShow.chinaCity = false;
-        } else {
-          this.$data.AddData.chinaCity = "";
-          this.$data.chinaShow.chinaCity = true;
-        }
-
-        if (
-          !this.$data.AdministrativeDistrict.area.filter(
-            (x) =>
-              x.province == this.$data.AddData.chinaProvince &&
-              x.city == this.$data.AddData.chinaCity
-          ).length
-        ) {
-          this.$data.AddData.chinaArea = "01";
-          this.$data.chinaShow.chinaArea = false;
-        } else {
-          this.$data.AddData.chinaArea = "";
-          this.$data.chinaShow.chinaArea = true;
-        }
-        if (
-          !this.$data.AdministrativeDistrict.town.filter(
-            (x) =>
-              x.province == this.$data.AddData.chinaProvince &&
-              x.city == this.$data.AddData.chinaCity &&
-              x.area == this.$data.AddData.chinaArea
-          ).length
-        ) {
-          this.$data.AddData.chinaTown = "01";
-          this.$data.chinaShow.chinaTown = false;
-        } else {
-          this.$data.AddData.chinaTown = "";
-          this.$data.chinaShow.chinaTown = true;
-        }
+      handler: async function () {
+        await this.computeCity();
+      },
+      deep: true,
+    },
+    "AddData.chinaCity": {
+      handler: async function () {
+        await this.computeArea();
+      },
+      deep: true,
+    },
+    "AddData.chinaArea": {
+      handler: async function () {
+        await this.computeTown();
       },
       deep: true,
     },
@@ -111,11 +165,14 @@ export default {
     chinaCity,
     chinaProvince,
     chinaArea,
+    chinaTown,
+    CustomerContact,
   },
   computed: {},
   created() {
     console.log(province_city_china);
     this.$data.AdministrativeDistrict = province_city_china;
+    this.pushContact();
   },
 };
 </script>
