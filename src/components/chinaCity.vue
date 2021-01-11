@@ -1,17 +1,17 @@
 <template>
   <select
     :class="class_str"
-    :value="city"
-    @change="$emit(`update:city`, $event.target.value)"
+    :value="chinaCity"
+    @change="$emit(`update:chinaCity`, $event.target.value)"
   >
     <option value="">請選擇...</option>
-    <template v-for="city in citys">
+    <template v-for="item in chinaCitys">
       <option
-        :key="city.city"
-        :value="city.city"
-        v-if="city.province == province"
+        :key="item.province + item.city"
+        :value="item.city"
+        v-if="item.province == chinaProvince"
       >
-        {{ city.name }}
+        {{ item.name }}
       </option>
     </template>
   </select>
@@ -20,11 +20,11 @@
 export default {
   name: "city",
   props: {
-    province: {
+    chinaProvince: {
       type: String,
       required: true,
     },
-    citys: {
+    chinaCitys: {
       type: Array,
       required: true,
     },
@@ -32,7 +32,7 @@ export default {
       type: String,
       required: true,
     },
-    city: {
+    chinaCity: {
       type: String,
       required: true,
     },

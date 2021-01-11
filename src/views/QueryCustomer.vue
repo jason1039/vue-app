@@ -10,18 +10,18 @@
         v-model="QuerySelector.CustomerName"
       />
       <div class="col-2 text-left Subject">客戶位置(省)</div>
-      <province
-        :provinces="AdministrativeDistrict.province"
+      <chinaProvince
+        :chinaProvinces="AdministrativeDistrict.province"
         class_str="col-2"
-        :province.sync="QuerySelector.province"
-      ></province>
+        :chinaProvince.sync="QuerySelector.chinaProvince"
+      ></chinaProvince>
       <div class="col-2 text-left Subject">客戶位置(市)</div>
-      <city
+      <!-- <city
         :citys="AdministrativeDistrict.city"
         class_str="col-2"
         :city.sync="QuerySelector.city"
         :province.sync="QuerySelector.province"
-      ></city>
+      ></city> -->
       <div class="col-2 text-left Subject">客戶位置(區)</div>
       <select class="col-2" v-model="QuerySelector.area">
         <option value="">請選擇...</option>
@@ -76,8 +76,8 @@
 </template>
 <script>
 import province_city_china from "province-city-china/data";
-import province from "../components/province.vue";
-import city from "../components/city.vue";
+import chinaProvince from "../components/chinaProvince.vue";
+// import city from "../components/city.vue";
 export default {
   data() {
     return {
@@ -85,9 +85,9 @@ export default {
       AdministrativeDistrict: {},
       QuerySelector: {
         CustomerName: ``,
-        province: ``,
-        city: ``,
-        area: ``,
+        chinaProvince: ``,
+        chinaCity: ``,
+        chinaArea: ``,
         CustomerAddr: ``,
       },
     };
@@ -197,8 +197,8 @@ export default {
     },
   },
   components: {
-    province,
-    city,
+    chinaProvince,
+    // city,
   },
   watch: {
     QuerySelector: {

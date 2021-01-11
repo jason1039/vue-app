@@ -7,7 +7,6 @@ axios.defaults.timeout = 3000;
 function getPort(port) {
   // let url = `http://localhost:${port}`;
   let url = ``;
-  console.log(url);
   axios.get(`${url}/test`).then((response) => {
     if (response.data == `TestCheck`) {
       const userRequest = axios.create({

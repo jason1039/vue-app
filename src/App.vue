@@ -87,12 +87,37 @@ export default {
   left: 250px;
   width: 1000px;
 }
-@media screen {
+/* @media screen {
   .row {
     display: flex;
     flex-wrap: wrap;
     margin-right: -15px;
     margin-left: -15px;
+  }
+  .row .col-1,
+  .row .col-2,
+  .row .col-3,
+  .row .col-4,
+  .row .col-5,
+  .row .col-6,
+  .row .col-7,
+  .row .col-8,
+  .row .col-9,
+  .row .col-10,
+  .row .col-11,
+  .row .col-12,
+  .row .col-13,
+  .row .col-14,
+  .row .col-15,
+  .row .col-16,
+  .row .col-17,
+  .row .col-18,
+  .row .col-19,
+  .row .col-20 {
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
   }
   .row .col-1 {
     flex: 0 0 5%;
@@ -186,30 +211,38 @@ export default {
   .green {
     color: green;
   }
-  .search {
-    border: solid 1px black;
-    padding-top: 4px;
-    padding-bottom: 4px;
+  .bg-red {
+    background-color: red;
   }
-  .search .Title {
-    font-size: larger;
-    font-weight: bold;
-    color: green;
+  .bg-blue {
+    background-color: blue;
   }
-  .search .Subject {
-    color: blue;
-    font-size: large;
-  }
-  .search input {
-    border-top: 0px;
-    border-left: 0px;
-    border-right: 0px;
-  }
-  .search input:focus {
-    border-top: 0px;
-    border-left: 0px;
-    border-right: 0px;
-  }
+  .bg-green {
+    background-color: green;
+  } */
+.search {
+  border: solid 1px black;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.search .Title {
+  font-size: larger;
+  font-weight: bold;
+  color: green;
+}
+.search .Subject {
+  color: blue;
+  font-size: large;
+}
+.search input {
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+}
+.search input:focus {
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
 }
 .text-left {
   text-align: left;
@@ -218,3 +251,4 @@ export default {
   text-align: center;
 }
 </style>
+<style src="./css/bootstrap.min.css"></style>
