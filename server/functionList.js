@@ -1,12 +1,12 @@
 const Tables = require('./Tables.json');
 //輸出WhereString
-// function getWhereJoinString(joinCode, wheres, tables) {
-//     let wheres_ary = [];
-//     Object.keys(wheres).forEach(where => {
-//         wheres_ary.push(`${getTableFromColumn(where, tables, joinCode)} = '${wheres[where]}' `);
-//     });
-//     return wheres_ary.join('and ');
-// }
+function getWhereJoinString(joinCode, wheres, tables) {
+    let wheres_ary = [];
+    Object.keys(wheres).forEach(where => {
+        wheres_ary.push(`${getTableFromColumn(where, tables, joinCode)} = '${wheres[where]}' `);
+    });
+    return wheres_ary.join('and ');
+}
 
 //輸出ColumnsString
 function getColumnsJoinString(joinCode, columns, tables) {
@@ -312,6 +312,7 @@ function getMainTable(tables) {
 }
 
 module.exports = {
+    getWhereJoinString: getWhereJoinString,
     getTables: getTables,
     getJoinCode: getJoinCode,
     getJoinString: getJoinString,

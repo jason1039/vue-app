@@ -1,7 +1,7 @@
 const Tables = require('./Tables.json');
 const sql = require('mssql');
 const config = require('./config.js');
-const { getTables, getJoinCode, getJoinString, tablesP, getColumnsJoinString, postInsertString, patchUpdateString, putUpdateString } = require('./functionList.js');
+const { getWhereJoinString, getTables, getJoinCode, getJoinString, tablesP, getColumnsJoinString, postInsertString, patchUpdateString, putUpdateString } = require('./functionList.js');
 //新增get用法
 function addAppGet(app, tableName) {
     let tableList = getTables(tableName);
@@ -11,12 +11,16 @@ function addAppGet(app, tableName) {
         tablesP(tables).forEach(x => {
             app.get(`/${x.join('&')}`, function (req, res) {
                 let columns = req.query.columns;
+                let wheres = req.query.wheres;
                 let columns_str = getColumnsJoinString(joinCode, columns, tables);
+                let wheres_str = getWhereJoinString(joinCode, wheres, tables);
+                let query_str = `select ${columns_str} ${from_str} `;
+                if (wheres_str) query_str += wheres;
                 sql.connect(config, function (connectERR) {
                     if (connectERR) console.log(connectERR);
                     //create Request object
                     var request = new sql.Request();
-                    request.query(`select ${columns_str} ${from_str}`, function (queryERR, recordset) {
+                    request.query(query_str, function (queryERR, recordset) {
                         if (queryERR) res.send(queryERR);
                         res.send(recordset);
                     });

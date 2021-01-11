@@ -9,9 +9,9 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
     next();
 });
-
+let checkCount = 0;
 app.get(`/test`, function (req, res) {
-    res.status(200);
+    res.status(200).send('TestCheck');
 });
 Object.keys(Tables).forEach(item => {
     //get
@@ -22,7 +22,12 @@ Object.keys(Tables).forEach(item => {
     addPut(app, item);
     //patch
     addPatch(app, item);
+    //lock
+
+    //unlock
+
     //delete
+
 })
 // Object.keys(sqlMap).forEach(name => {
 //     switch (sqlMap[name].type) {
