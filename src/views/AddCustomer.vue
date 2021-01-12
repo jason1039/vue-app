@@ -42,17 +42,16 @@
       <input type="text" class="col-6" />
     </div>
     <h3>聯絡人</h3>
-    <div class="row">
-      <CustomerContact
-        v-for="(item, index) in AddData.CustomerContact"
-        :ContactPersonName.sync="item.ContactPersonName"
-        :Sex.sync="item.Sex"
-        :AgeGroup.sync="item.AgeGroup"
-        :LikeLiqueur.sync="item.LikeLiqueur"
-        :Dwell.sync="item.Dwell"
-        :key="'contact_' + index"
-      ></CustomerContact>
-    </div>
+    <CustomerContact
+      v-for="(item, index) in AddData.CustomerContact"
+      :ContactPersonName.sync="item.ContactPersonName"
+      :Sex.sync="item.Sex"
+      :AgeGroup.sync="item.AgeGroup"
+      :LikeLiqueur.sync="item.LikeLiqueur"
+      :Dwell.sync="item.Dwell"
+      :CustomerContactNumbers="item.CustomerContactNumbers || []"
+      :key="'contact_' + index"
+    ></CustomerContact>
   </div>
 </template>
 <script>
@@ -132,13 +131,9 @@ export default {
       }
     },
     pushContact() {
-      this.$data.AddData.CustomerContact.push({});
-      // {
-      //   Sex: "M",
-      //   AgeGroup: 2,
-      //   LikeLiqueur: "Y",
-      //   Dwell: "",
-      // }
+      this.$data.AddData.CustomerContact.push({
+        CustomerContactNumbers: [{}],
+      });
     },
   },
   watch: {
@@ -157,6 +152,26 @@ export default {
     "AddData.chinaArea": {
       handler: async function () {
         await this.computeTown();
+      },
+      deep: true,
+    },
+    "AddData.CustomerContact.CustomerContactNumbers": {
+      handler: async function () {
+        let count = 0;
+        this.$data.AddData.CustomerContact.filter((item, index) => {
+          if (!item.ContactPersonName) count++;
+          if (count > 1) {
+            this.$data.AddData.CustomerContact.splice(index, 1);
+            count--;
+          }
+        });
+        if (!count) this.pushContact();
+      },
+      deep: true,
+    },
+    AddData: {
+      handler: async function () {
+        // console.log(this.$data.AddData);
       },
       deep: true,
     },
