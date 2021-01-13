@@ -1,7 +1,7 @@
 const Tables = require('./Tables.json');
 const sql = require('mssql');
 const config = require('./config.js');
-const { getWhereJoinString, getTables, getJoinCode, getJoinString, tablesP, getColumnsJoinString, postInsertString, patchUpdateString, putUpdateString } = require('./functionList.js');
+const { getWhereJoinString, getTables, getJoinCode, getJoinString, tablesP, getColumnsJoinString, postInsertString, patchUpdateString, putUpdateString, postForeignKey } = require('./functionList.js');
 //新增get用法
 function addAppGet(app, tableName) {
     let tableList = getTables(tableName);
@@ -33,31 +33,47 @@ function addAppGet(app, tableName) {
 
 //新增post用法
 function addAppPost(app, tableName) {
-    let tableList = getTables(tableName);
-    tableList.forEach(tables => {
-        let insert_obj = {};
-        tables.forEach(item => {
-            insert_obj[item] = {};
-        });
-        let tablesSet = new Set(tables);
-        tablesP(tables).forEach(x => {
-            app.post(`/${x.join('&')}`, function (req, res) {
-                let insert_str = postInsertString(insert_obj, tablesSet, req.body.params.data, tables);
-                sql.connect(config, function (connectERR) {
-                    if (connectERR) console.log(connectERR);
-                    //create Request object
-                    var request = new sql.Request();
-                    Object.keys(req.body.params.data).forEach(x => {
-                        request.input(x, req.body.params.data[x]);
-                    });
-                    request.query(insert_str, function (queryERR, recordset) {
-                        if (queryERR) console.log(queryERR);
-                        res.send(recordset);
-                    });
-                });
+    app.post(`/${tableName}`, function (req, res) {
+        let obj = postInsertString(req.body);
+        console.log(obj);
+        sql.connect(config, function (connectERR) {
+            if (connectERR) console.log(connectERR);
+            // create Request object
+            var request = new sql.Request();
+            obj.columnValues.forEach(x => {
+                request.input(x.columnKey, x.columnValue);
+            });
+            request.query(obj.insert_str, function (queryERR, recordset) {
+                if (queryERR) console.log(queryERR);
+                res.send(recordset);
             });
         });
     });
+    // let tableList = getTables(tableName);
+    // tableList.forEach(tables => {
+    //     let insert_obj = {};
+    //     tables.forEach(item => {
+    //         insert_obj[item] = {};
+    //     });
+    //     let tablesSet = new Set(tables);
+    //     tablesP(tables).forEach(x => {
+    //         app.post(`/${x.join('&')}`, function (req, res) {
+    //             let insert_str = postInsertString(insert_obj, tablesSet, req.body.params.data, tables);
+    //             sql.connect(config, function (connectERR) {
+    //                 if (connectERR) console.log(connectERR);
+    //                 //create Request object
+    //                 var request = new sql.Request();
+    //                 Object.keys(req.body.params.data).forEach(x => {
+    //                     request.input(x, req.body.params.data[x]);
+    //                 });
+    //                 request.query(insert_str, function (queryERR, recordset) {
+    //                     if (queryERR) console.log(queryERR);
+    //                     res.send(recordset);
+    //                 });
+    //             });
+    //         });
+    //     });
+    // });
 }
 
 //新增patch用法

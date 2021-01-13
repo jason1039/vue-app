@@ -1,61 +1,54 @@
 {
-    "Customer": {
+    "customer": {
         "ForeignTables": [
-            "CustomerNumber",
-            "CustomerContact"
+            "customercontact"
         ],
         "Columns": [
-            "CustomerId",
-            "CustomerName",
-            "CustomerProvince",
-            "CustomerArea",
-            "CustomerCity",
-            "CustomerAddr",
-            "CreateDate"
+            "customerid",
+            "customername",
+            "customerprovince",
+            "customerarea",
+            "customercity",
+            "customeraddr",
+            "createdate"
         ],
-        "Key": "CustomerId"
+        "Key": "customerid"
     },
-    "CustomerNumber": {
-        "ForeignTables": [],
-        "Columns": [
-            "CustomerNumberId",
-            "CustomerId",
-            "CustomerPhoneNumber"
-        ],
-        "Key": "CustomerNumberId"
-    },
-    "CustomerContact": {
+    "customercontact": {
         "ForeignTables": [
-            "CustomerContactNumber",
-            "CustomerContactRelation"
+            "customercontactnumbers",
+            "customercontactrelation"
         ],
         "Columns": [
-            "CustomerContactId",
-            "CustomerId",
-            "ContactPersonName",
-            "Sex",
-            "AgeGroup",
-            "LikeLiqueur",
-            "Dwell"
+            "customercontactid",
+            "customerid",
+            "contactpersonname",
+            "sex",
+            "agegroup",
+            "liqueur",
+            "smoke",
+            "sing",
+            "gifts",
+            "dwell"
         ],
-        "Key": "CustomerContactId"
+        "Key": "customercontactid"
     },
-    "CustomerContactNumber": {
+    "customercontactnumbers": {
         "ForeignTables": [],
         "Columns": [
-            "CustomerContactNumberId",
-            "CustomerContactId",
-            "CustomerContactPhoneNumber"
+            "customercontactnumbernd",
+            "customercontactid",
+            "customercontactphonenumber"
         ],
-        "Key": "CustomerContactNumberId"
+        "Key": "customercontactnumberid"
     },
-    "CustomerContactRelation": {
+    "customercontactrelation": {
         "ForeignTables": [],
         "Columns": [
-            "CustomerRelationId",
-            "CustomerContactId",
-            "RelationContent",
-            "RelationDate"
+            "customerrelationid",
+            "customercontactid",
+            "relationcontent",
+            "relationdate"
         ],
         "Key": "CustomerRelationId"
     }

@@ -1,12 +1,12 @@
 <template>
   <select
     :class="class_str"
-    :value="chinaProvince"
-    @change="$emit(`update:chinaProvince`, $event.target.value)"
+    :value="chinaprovince"
+    @change="$emit(`update:chinaprovince`, $event.target.value)"
   >
     <option value="">請選擇...</option>
     <option
-      v-for="item in chinaProvinces"
+      v-for="item in chinaprovinces"
       :value="item.province"
       :key="item.province"
     >
@@ -18,7 +18,7 @@
 export default {
   name: "chinaProvince",
   props: {
-    chinaProvinces: {
+    chinaprovinces: {
       type: Array,
       required: true,
     },
@@ -26,7 +26,7 @@ export default {
       type: String,
       required: true,
     },
-    chinaProvince: {
+    chinaprovince: {
       type: String,
       required: true,
     },

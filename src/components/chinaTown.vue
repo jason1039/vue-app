@@ -1,18 +1,18 @@
 <template>
   <select
     :class="class_str"
-    :value="chinaTown"
-    @change="$emit(`update:chinaTown`, $event.target.value)"
+    :value="chinatown"
+    @change="$emit(`update:chinatown`, $event.target.value)"
   >
     <option value="">請選擇...</option>
-    <template v-for="item in chinaTowns">
+    <template v-for="item in chinatowns">
       <option
         :key="item.province + item.city + item.area + item.town"
         :value="item.town"
         v-if="
-          item.province == chinaProvince &&
-          item.city == chinaCity &&
-          item.area == chinaArea
+          item.province == chinaprovince &&
+          item.city == chinacity &&
+          item.area == chinaarea
         "
       >
         {{ item.name }}
@@ -24,15 +24,15 @@
 export default {
   name: "chinaTown",
   props: {
-    chinaProvince: {
+    chinaprovince: {
       type: String,
       required: true,
     },
-    chinaCity: {
+    chinacity: {
       type: String,
       required: true,
     },
-    chinaTowns: {
+    chinatowns: {
       type: Array,
       required: true,
     },
@@ -40,11 +40,11 @@ export default {
       type: String,
       required: true,
     },
-    chinaArea: {
+    chinaarea: {
       type: String,
       required: true,
     },
-    chinaTown: {
+    chinatown: {
       type: String,
       required: true,
     },

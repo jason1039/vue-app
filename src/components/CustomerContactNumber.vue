@@ -18,8 +18,8 @@
       aria-describedby="basic-addon1"
       style="position: relative; left: -15px"
       ref="input"
-      :value="CustomerContactNumber"
-      @input="$emit('update:CustomerContactNumber', $event.target.value)"
+      :value="customercontactnumber"
+      @input="$emit('update:customercontactnumber', $event.target.value)"
     />
   </div>
 </template>
@@ -32,12 +32,12 @@ export default {
     };
   },
   props: {
-    CustomerContactNumberId: {
+    customercontactnumberid: {
       type: Number,
       required: false,
       default: 0,
     },
-    CustomerContactNumber: {
+    customercontactnumber: {
       type: String,
       required: false,
       default: ``,
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     clear() {
-      this.$emit("update:CustomerContactNumber", "");
+      this.$emit("update:customercontactnumber", "");
     },
   },
   mounted() {

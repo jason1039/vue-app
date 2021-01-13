@@ -50,43 +50,69 @@ function patchTablesFromColumn(ColumnName, tables) {
     });
     return tablesName;
 }
-
-//輸出post新增字串
-function postInsertString(insert_obj, tablesSet, data, tables) {
-    let runWhile = false;
-    let insert_ary = [];
-    let key = {};
-    Object.keys(data).forEach(x => {
-        insert_obj[postTableFromColumn(x, tables)][x] = data[x];
-    });
+function inputText(index) {
+    let temp = ['A', 'A', 'A'];
+    let count = 2;
     do {
-        runWhile = false;
-        let mainTable = getMainTable(Array.from(tablesSet));
-
-        let columns = [];
-        let columnsValue = [];
-        let keyTemp = [];
-        Object.keys(insert_obj[mainTable]).forEach(x => {
-            columns.push(x);
-            columnsValue.push(`@${x}`);
-            keyTemp.push(`${x} = @${x} `);
-        });
-        if (key[mainTable]) {
-            columns.push(key[mainTable].key);
-            columnsValue.push(key[mainTable].keyValue);
+        temp[count] = String.fromCharCode(temp[count].charCodeAt(0) + index % 26);
+        index = parseInt(index / 26);
+        count--;
+    } while (index > 0);
+    return temp.join('');
+}
+//輸出post新增字串
+function postInsertString(obj, columnValues) {
+    if (!columnValues) columnValues = [];
+    let keyValue;
+    let keyName;
+    let fatherKeyName;
+    let data = [];
+    let tableName = ``;
+    Object.keys(obj).forEach(name => {
+        if (typeof obj[name] == `object`) {
+            tableName = name;
+            data = obj[name];
+            keyName = Tables[tableName].Key;
+        } else {
+            fatherKeyName = name;
+            keyValue = obj[name];
         }
-        Tables[mainTable].ForeignTables.forEach(x => {
-            key[x] = {
-                keyValue: `(select top 1 ${Tables[mainTable].Key} from ${mainTable} where ${keyTemp.join('and ')} order by ${Tables[mainTable].Key} DESC)`,
-                key: Tables[mainTable].Key
+    });
+    if (!fatherKeyName || fatherKeyName == 'undefined') {
+        Object.keys(Tables).forEach(item => {
+            if (Tables[item].ForeignTables.filter(x => x == tableName).length == 1) {
+                fatherKeyName = Tables[item].Key;
             }
         });
-
-        insert_ary.push(`insert into ${mainTable} (${columns.join(', ')}) values (${columnsValue.join(', ')})`);
-        tablesSet.delete(mainTable);
-        if (tablesSet.size) runWhile = true;
-    } while (runWhile);
-    return insert_ary.join(' ');
+    }
+    let insert_str = ``;
+    data.forEach((row, index) => {
+        let key = `(select top 1 ${keyName} from ${tableName} order by ${keyName} DESC) `;
+        let subInsert = [];
+        let temp = { columns: [], values: [] };
+        if (keyValue) {
+            temp.columns.push(fatherKeyName);
+            temp.values.push(keyValue);
+        }
+        Object.keys(row).forEach((item, index) => {
+            if (typeof row[item] == 'string') {
+                let columnKey = inputText(columnValues.length);
+                columnValues.push({
+                    columnKey: columnKey,
+                    columnValue: row[item]
+                });
+                temp.columns.push(item);
+                temp.values.push(`@${columnKey}`);
+            } else {
+                let s = postInsertString(JSON.parse(`{"${item}":${JSON.stringify(row[item])},"${keyName}":"${key}"}`), columnValues);
+                subInsert.push(s.insert_str);
+                columnValues = s.columnValues;
+            }
+        });
+        insert_str += `insert into ${tableName} (${temp.columns.join(', ')}) values (${temp.values.join(', ')}) `;
+        insert_str += subInsert.join(' ');
+    });
+    return { insert_str: insert_str, columnValues: columnValues };
 }
 
 //輸出patch更新字串
@@ -311,6 +337,7 @@ function getMainTable(tables) {
     return mainTable;
 }
 
+
 module.exports = {
     getWhereJoinString: getWhereJoinString,
     getTables: getTables,
@@ -320,5 +347,5 @@ module.exports = {
     getColumnsJoinString: getColumnsJoinString,
     postInsertString: postInsertString,
     patchUpdateString: patchUpdateString,
-    putUpdateString: putUpdateString
+    putUpdateString: putUpdateString,
 }

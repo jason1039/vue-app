@@ -2,23 +2,23 @@
   <div class="row border">
     <input
       type="text"
-      :value="ContactPersonName"
+      :value="contactpersonname"
       placeholder="聯絡人名稱"
       class="col-3"
-      @input="$emit('update:ContactPersonName', $event.target.value)"
+      @input="$emit('update:contactpersonname', $event.target.value)"
     />
     <select
       class="col-2"
-      :value="Sex"
-      @change="$emit('update:Sex', $event.target.value)"
+      :value="sex"
+      @change="$emit('update:sex', $event.target.value)"
     >
       <option value="M">男</option>
       <option value="W">女</option>
     </select>
     <select
       class="col-3"
-      :value="AgeGroup"
-      @change="$emit('update:AgeGroup', $event.target.value)"
+      :value="agegroup"
+      @change="$emit('update:agegroup', $event.target.value)"
     >
       <option value="1">0-19歲</option>
       <option value="2">20-39歲</option>
@@ -31,8 +31,8 @@
       <input
         type="checkbox"
         class="col-auto"
-        value="LikeLiqueur"
-        :checked="LikeLiqueur == 'Y'"
+        value="liqueur"
+        :checked="liqueur == 'Y'"
         @change="changeCheckbox($event.target.value, $event.target.checked)"
         style="height: 25px; width: 40px"
       />
@@ -42,8 +42,8 @@
       <input
         type="checkbox"
         class="col-auto"
-        value="LikeLiqueur"
-        :checked="LikeLiqueur == 'Y'"
+        value="smoke"
+        :checked="smoke == 'Y'"
         @change="changeCheckbox($event.target.value, $event.target.checked)"
         style="height: 25px; width: 40px"
       />
@@ -53,8 +53,8 @@
       <input
         type="checkbox"
         class="col-auto"
-        value="LikeLiqueur"
-        :checked="LikeLiqueur == 'Y'"
+        value="sing"
+        :checked="sing == 'Y'"
         @change="changeCheckbox($event.target.value, $event.target.checked)"
         style="height: 25px; width: 40px"
       />
@@ -64,25 +64,25 @@
       <input
         type="checkbox"
         class="col-auto"
-        value="LikeLiqueur"
-        :checked="LikeLiqueur == 'Y'"
+        value="gifts"
+        :checked="gifts == 'Y'"
         @change="changeCheckbox($event.target.value, $event.target.checked)"
         style="height: 25px; width: 40px"
       />
     </div>
     <input
       type="text"
-      :value="Dwell"
+      :value="dwell"
       class="col-8"
-      @input="$emit('update:Dwell', $event.target.value)"
+      @input="$emit('update:dwell', $event.target.value)"
       placeholder="聯絡人住址"
     />
     <input type="text" class="col-12" placeholder="聯絡人備註" />
     <CustomerContactNumber
-      v-for="number in CustomerContactNumbers"
-      :key="number.CustomerContactNumberId"
-      :CustomerContactNumberId.sync="number.CustomerContactNumberId"
-      :CustomerContactNumber.sync="number.CustomerContactNumber"
+      v-for="number in customercontactnumbers"
+      :key="number.customercontactnumberid"
+      :customercontactnumberid.sync="number.customercontactnumberid"
+      :customercontactnumber.sync="number.customercontactnumber"
     ></CustomerContactNumber>
   </div>
 </template>
@@ -91,41 +91,53 @@ import CustomerContactNumber from "./CustomerContactNumber.vue";
 export default {
   name: "CustomerContact",
   props: {
-    CustomerContactId: {
+    customercontactid: {
       type: Number,
       required: false,
       default: 0,
     },
-    ContactPersonName: {
+    contactpersonname: {
       type: String,
       required: true,
       default: ``,
     },
-    Sex: {
+    sex: {
       type: String,
       default: "M",
     },
-    AgeGroup: {
-      type: Number,
-      default: 2,
+    agegroup: {
+      type: String,
+      default: "2",
     },
-    LikeLiqueur: {
+    liqueur: {
       type: String,
       default: "Y",
     },
-    Dwell: {
+    smoke: {
+      type: String,
+      default: "N",
+    },
+    sing: {
+      type: String,
+      default: "N",
+    },
+    gifts: {
+      type: String,
+      default: "N",
+    },
+    dwell: {
       type: String,
       required: true,
       default: ``,
     },
-    CustomerContactNumbers: {
+    customercontactnumbers: {
       type: Array,
       required: false,
     },
   },
   methods: {
     pushContactNumber() {
-      this.$props.CustomerContactNumbers.push({});
+      this.$props.customercontactnumbers.push({});
     },
     changeCheckbox(value, checked) {
       this.$emit(`update:${value}`, checked ? "Y" : "N");
@@ -135,13 +147,13 @@ export default {
     CustomerContactNumber,
   },
   watch: {
-    CustomerContactNumbers: {
+    customercontactnumbers: {
       handler: async function () {
         let count = 0;
-        this.$props.CustomerContactNumbers.filter((item, index) => {
-          if (!item.CustomerContactNumber) count++;
+        this.$props.customercontactnumbers.filter((item, index) => {
+          if (!item.customercontactnumber) count++;
           if (count > 1) {
-            this.$props.CustomerContactNumbers.splice(index, 1);
+            this.$props.customercontactnumbers.splice(index, 1);
             count--;
           }
         });
@@ -152,3 +164,10 @@ export default {
   },
 };
 </script>
+<style scoped>
+.border {
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+</style>
