@@ -1,7 +1,7 @@
 const Tables = require('./Tables.json');
 const sql = require('mssql');
 const config = require('./config.js');
-const { getWhereJoinString, getTables, getJoinCode, getJoinString, tablesP, getColumnsJoinString, postInsertString, patchUpdateString, putUpdateString, postForeignKey } = require('./functionList.js');
+const { getWhereJoinString, getTables, getJoinCode, getJoinString, tablesP, getColumnsJoinString, postInsertString, patchUpdateString, putUpdateString } = require('./functionList.js');
 //新增get用法
 function addAppGet(app, tableName) {
     let tableList = getTables(tableName);
@@ -31,11 +31,138 @@ function addAppGet(app, tableName) {
     });
 }
 
+function addAppgetObj(app, tableName) {
+    let obj = {};
+    let result = {};
+    obj[tableName] = getSubTables(tableName, obj);
+    app.get(`/Object/${tableName}`, async function (req, res) {
+        let id = req.query.id;
+        let temp = [{
+            tableList: [tableName]
+        }];
+        for (let i = 0; i < temp.length; i++) {
+            let obj_temp = obj;
+            temp[i].tableList.forEach(x => {
+                obj_temp = obj_temp[x];
+            });
+            let old_ary = JSON.parse(JSON.stringify(temp[i].tableList));
+            Object.keys(obj_temp).forEach(y => {
+                let old_ary_temp = JSON.parse(JSON.stringify(old_ary));
+                old_ary_temp.push(y);
+                temp.push({
+                    tableList: old_ary_temp
+                });
+            });
+        }
+        let query_ary = {};
+        temp.forEach(x => {
+            let name = x.tableList[x.tableList.length - 1];
+            let mainCode = String.fromCharCode(65 + x.tableList.length - 1);
+            let join = [];
+            let key;
+            let str = ``;
+            x.tableList.forEach((y, index) => {
+                let str = `${y} ${String.fromCharCode(65 + index)} `;
+                if (key)
+                    str += `on ${String.fromCharCode(65 + index - 1)}.${key} = ${String.fromCharCode(65 + index)}.${key} `;
+                key = Tables[y].Key;
+                join.push(str);
+            });
+            query_ary[name] = {
+                query_str: `select ${mainCode}.* from ${join.join('left join ')}where A.${Tables[tableName].Key} = '${id}' `,
+                father: x.tableList[x.tableList.length - 2],
+                key: key
+            };
+        });
+        for (let i = 0; i < Object.keys(query_ary).length; i++) {
+            query_ary[Object.keys(query_ary)[i]].data = await getQuery(query_ary[Object.keys(query_ary)[i]].query_str);
+        }
+        query_ary[tableName].data.forEach(x => {
+            Object.keys(x).forEach(y => {
+                obj[tableName][y] = x[y];
+            });
+        });
+        delete query_ary[tableName];
+        let father = tableName;
+        obj_temp = obj[father];
+        temp = [];
+        let testCount = 0;
+        while (Object.keys(query_ary).length && testCount < 5) {
+            Object.keys(query_ary).forEach(itemName => {
+                if (query_ary[itemName].father == father) {
+                    query_ary[itemName].data.forEach(dataRow => {
+                        console.log(dataRow);
+                        Object.keys(dataRow).forEach(dataName => {
+                            obj_temp[itemName][dataName] = dataRow[dataName];
+                        })
+                    });
+                    delete query_ary[itemName];
+                    temp.push(itemName);
+                }
+            });
+            let runWhile = true;
+            while (runWhile) {
+                let father_temp = temp.shift();
+                Object.keys(query_ary).every(itemName => {
+                    if (query_ary[itemName].father == father_temp) {
+                        obj_temp = obj_temp[father_temp];
+                        father = father_temp;
+                        runWhile = false;
+                    }
+                });
+            }
+            testCount++;
+        }
+        console.log('whileEnd');
+        console.log(obj);
+        // obj_temp = obj;
+        // let testCount = 0
+        // while (Object.keys(query_ary).length && testCount < 1) {
+        //     Object.keys(obj_temp).forEach(x => {
+        //         obj_temp = obj_temp[x];
+        //         query_ary[x].data.forEach(y => {
+        //             Object.keys(y).forEach(z => {
+        //                 obj_temp[z] = y[z];
+        //             });
+        //         });
+        //         delete query_ary[x];
+        //     });
+        //     // obj_temp = obj_temp[]
+        //     testCount++;
+        // };
+        // console.log(obj);
+        res.send();
+    });
+}
+
+async function getQuery(query_str) {
+    const promise = new Promise((resolve, reject) => {
+        sql.connect(config, function (connectERR) {
+            if (connectERR) console.log(connectERR);
+            //create Request object
+            var request = new sql.Request();
+            request.query(query_str, function (queryERR, recordset) {
+                if (queryERR) console.log(queryERR);
+                resolve(recordset.recordset);
+            });
+        });
+    });
+    return promise;
+}
+
+function getSubTables(tableName) {
+    let obj = {}
+    let subTables = Tables[tableName].ForeignTables;
+    subTables.forEach(x => {
+        obj[x] = getSubTables(x);
+    });
+    return obj;
+}
+
 //新增post用法
 function addAppPost(app, tableName) {
     app.post(`/${tableName}`, function (req, res) {
         let obj = postInsertString(req.body);
-        console.log(obj);
         sql.connect(config, function (connectERR) {
             if (connectERR) console.log(connectERR);
             // create Request object
@@ -179,5 +306,6 @@ module.exports = {
     addGet: addAppGet,
     addPost: addAppPost,
     addPatch: addAppPatch,
-    addPut: addAppPut
+    addPut: addAppPut,
+    addAppgetObj: addAppgetObj
 }

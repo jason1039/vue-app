@@ -312,6 +312,9 @@ export default {
     // this.postCustomer();
     // this.patchCustomer();
     // this.putCustomer();
+    this.axios.get("/Object/customer", { params: { id: 1 } }).then(() => {
+      console.log("end");
+    });
   },
 };
 </script>

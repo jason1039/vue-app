@@ -1,21 +1,23 @@
+const ResetTables = require('./ResetTables.js');
+ResetTables();
 const bodyParser = require('body-parser');
 const express = require('express');
 // const sqlMap = require('./apiMap.json');
 const Tables = require('./Tables.json');
-const { addGet, addPost, addPatch, addPut } = require('./compute.js');
+const { addGet, addPost, addPatch, addPut, addAppgetObj } = require('./compute.js');
 var app = express();
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
     next();
 });
-let checkCount = 0;
 app.get(`/test`, function (req, res) {
     res.status(200).send('TestCheck');
 });
 Object.keys(Tables).forEach(item => {
     //get
     addGet(app, item);
+    addAppgetObj(app, item);
     //post
     addPost(app, item);
     //put
@@ -88,4 +90,3 @@ function runServer(port) {
     });
 }
 runServer(port);
-module.exports = { port: port };
