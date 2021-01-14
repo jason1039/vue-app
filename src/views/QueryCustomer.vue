@@ -7,49 +7,50 @@
       <input
         type="text"
         class="col-3 text-left"
-        v-model="QuerySelector.CustomerName"
+        v-model="QuerySelector.customername"
       />
-      <div class="col-2 text-left Subject">客戶位置(省)</div>
+      <div class="col-3 text-left Subject">客戶位置(省)</div>
       <chinaProvince
-        :chinaProvinces="AdministrativeDistrict.province"
-        class_str="col-2"
-        :chinaProvince.sync="QuerySelector.chinaProvince"
+        :chinaprovinces="AdministrativeDistrict.province"
+        class_str="col-3"
+        :chinaprovince.sync="QuerySelector.customerprovince"
       ></chinaProvince>
-      <div class="col-2 text-left Subject">客戶位置(市)</div>
-      <div class="col-2 text-left Subject">客戶位置(區)</div>
-      <select class="col-2" v-model="QuerySelector.area">
-        <option value="">請選擇...</option>
-        <template v-for="area in AdministrativeDistrict.area">
-          <option
-            :key="area.area"
-            :value="area.area"
-            v-if="
-              area.province == QuerySelector.province &&
-              area.city == QuerySelector.city
-            "
-          >
-            {{ area.name }}
-          </option>
-        </template>
-      </select>
-      <div class="col-2"></div>
-      <div class="col-2 text-left Subject">客戶地址</div>
-      <input
-        type="text"
-        class="col-3 text-left"
-        v-model="QuerySelector.CustomerAddr"
-      />
-      <div class="col-13"></div>
-      <router-link to="/Customer/Add" class="col-1 text-right"
+      <div class="col-3 text-left Subject">客戶位置(市)</div>
+      <chinaCity
+        :chinacitys="AdministrativeDistrict.city"
+        class_str="col-3"
+        :chinacity.sync="QuerySelector.customercity"
+        :chinaprovince.sync="QuerySelector.customerprovince"
+      ></chinaCity>
+      <router-link to="/Customer/Add" class="col-3 text-right"
         ><img src="../assets/add.png" style="width: 22px"
       /></router-link>
+      <div class="col-3 text-left Subject">客戶位置(區)</div>
+      <chinaArea
+        :chinaareas="AdministrativeDistrict.area"
+        class_str="col-3"
+        :chinaarea.sync="QuerySelector.customerarea"
+        :chinaprovince.sync="QuerySelector.customerprovince"
+        :chinacity.sync="QuerySelector.customercity"
+      ></chinaArea>
+      <div class="col-3 text-left Subject">客戶位置(街)</div>
+      <chinaTown
+        :chinatowns="AdministrativeDistrict.town"
+        class_str="col-4"
+        :chinaarea.sync="QuerySelector.customerarea"
+        :chinaprovince.sync="QuerySelector.customerprovince"
+        :chinacity.sync="QuerySelector.customercity"
+        :chinatown.sync="QuerySelector.customertown"
+      ></chinaTown>
+      <div class="col-3 text-left Subject">客戶地址</div>
+      <input type="text" class="col-4" v-model="QuerySelector.customeraddr" />
     </div>
     <div class="row">
       <div class="col-4 text-left">客戶名稱</div>
-      <div class="col-2 text-left">客戶位置(省)</div>
-      <div class="col-2 text-left">客戶位置(市)</div>
-      <div class="col-2 text-left">客戶位置(區)</div>
-      <div class="col-8 text-center">客戶地址</div>
+      <div class="col-3 text-left">客戶位置(省)</div>
+      <div class="col-3 text-left">客戶位置(市)</div>
+      <div class="col-3 text-left">客戶位置(區)</div>
+      <div class="col-5 text-center">客戶地址</div>
       <div class="col-2 text-center">編輯</div>
     </div>
     <div
@@ -57,12 +58,16 @@
       :key="customer.CustomerId"
       class="row"
     >
-      <div class="col-4 text-left">{{ customer.CustomerName }}</div>
-      <div class="col-2 text-left">{{ customer.CustomerProvince }}</div>
-      <div class="col-2 text-left">{{ customer.CustomerArea }}</div>
-      <div class="col-2 text-left">{{ customer.CustomerCity }}</div>
-      <div class="col-8 text-center">{{ customer.CustomerAddr }}</div>
-      <router-link to="/Customer/Edit" class="col-2 text-center"
+      <div class="col-4 text-left">{{ customer.customername }}</div>
+      <div class="col-3 text-left">
+        {{ codeToProvince(customer.customerprovince) }}
+      </div>
+      <div class="col-3 text-left">{{ codeToCity(customer.customercity) }}</div>
+      <div class="col-3 text-left">{{ codeToArea(customer.customerarea) }}</div>
+      <div class="col-5 text-center">{{ customer.customeraddr }}</div>
+      <router-link
+        :to="'/Customer/Edit/' + customer.customerid"
+        class="col-2 text-center"
         ><img src="../assets/edit.png" style="width: 18px"
       /></router-link>
     </div>
@@ -71,31 +76,51 @@
 <script>
 import province_city_china from "province-city-china/data";
 import chinaProvince from "../components/chinaProvince.vue";
-// import city from "../components/city.vue";
+import chinaCity from "../components/chinaCity.vue";
+import chinaArea from "../components/chinaArea.vue";
+import chinaTown from "../components/chinaTown.vue";
 export default {
   data() {
     return {
       CustomerList: [],
       AdministrativeDistrict: {},
       QuerySelector: {
-        CustomerName: ``,
-        chinaProvince: ``,
-        chinaCity: ``,
-        chinaArea: ``,
-        CustomerAddr: ``,
+        customername: ``,
+        customerprovince: ``,
+        customercity: ``,
+        customerarea: ``,
+        customertown: ``,
+        customeraddr: ``,
       },
     };
   },
   methods: {
     getCustomerList() {
+      let obj = JSON.parse(JSON.stringify(this.$data.QuerySelector));
+      let querySelector = {};
+      Object.keys(obj).forEach((element) => {
+        if (obj[element])
+          querySelector[element] = {
+            where: JSON.stringify(obj[element]),
+            relation: "=",
+          };
+      });
       this.axios
-        .get("/Customer&CustomerContact", {
+        .get("/customer", {
           params: {
-            columns: [],
-            wheres: { CustomerAddr: "1" },
+            columns: [
+              "customerid",
+              "customerprovince",
+              "customercity",
+              "customerarea",
+              "customertown",
+              "customeraddr",
+            ],
+            wheres: querySelector,
           },
         })
         .then((response) => {
+          console.log(response.data.recordset);
           this.$data.CustomerList = response.data.recordset;
         })
         .catch((err) => {
@@ -103,6 +128,26 @@ export default {
             JSON.parse(err.response.request.response).originalError.info.message
           );
         });
+    },
+    codeToProvince(code) {
+      return this.$data.AdministrativeDistrict.province.filter(
+        (x) => x.province == code
+      )[0].name;
+    },
+    codeToCity(code) {
+      return this.$data.AdministrativeDistrict.city.filter(
+        (x) => x.city == code
+      )[0].name;
+    },
+    codeToArea(code) {
+      return this.$data.AdministrativeDistrict.area.filter(
+        (x) => x.area == code
+      )[0].name;
+    },
+    codeToTown(code) {
+      return this.$data.AdministrativeDistrict.town.filter(
+        (x) => x.town == code
+      )[0].name;
     },
     postCustomer() {
       this.axios
@@ -189,10 +234,50 @@ export default {
         params.push(`CustomerAddr like '%${QuerySelector.CustomerAddr}%'`);
       return params;
     },
+
+    async computeCity() {
+      this.$data.QuerySelector.customercity = "";
+      if (
+        !this.$data.AdministrativeDistrict.city.filter(
+          (x) => x.province == this.$data.QuerySelector.customerprovince
+        ).length
+      ) {
+        this.$data.QuerySelector.customercity = "01";
+      }
+      await this.computeArea();
+    },
+    async computeArea() {
+      this.$data.QuerySelector.customerarea = "";
+      if (
+        !this.$data.AdministrativeDistrict.area.filter(
+          (x) =>
+            x.province == this.$data.QuerySelector.customerprovince &&
+            x.city == this.$data.QuerySelector.customercity
+        ).length
+      ) {
+        this.$data.QuerySelector.customerarea = "01";
+      }
+      await this.computeTown();
+    },
+    async computeTown() {
+      this.$data.QuerySelector.customertown = "";
+      if (
+        !this.$data.AdministrativeDistrict.town.filter(
+          (x) =>
+            x.province == this.$data.QuerySelector.customerprovince &&
+            x.city == this.$data.QuerySelector.customercity &&
+            x.area == this.$data.QuerySelector.customerarea
+        ).length
+      ) {
+        this.$data.QuerySelector.customertown = "01";
+      }
+    },
   },
   components: {
     chinaProvince,
-    // city,
+    chinaCity,
+    chinaArea,
+    chinaTown,
   },
   watch: {
     QuerySelector: {
@@ -201,12 +286,31 @@ export default {
       },
       deep: true,
     },
+    "QuerySelector.customerprovince": {
+      handler: async function () {
+        await this.computeCity();
+      },
+      deep: true,
+    },
+    "QuerySelector.customercity": {
+      handler: async function () {
+        await this.computeArea();
+      },
+      deep: true,
+    },
+    "QuerySelector.customerarea": {
+      handler: async function () {
+        await this.computeTown();
+      },
+      deep: true,
+    },
   },
   created() {
     this.$data.AdministrativeDistrict = province_city_china;
-    // this.getCustomerList();
+    console.log(this.$data.AdministrativeDistrict);
+    this.getCustomerList();
     // this.postCustomer();
-    this.patchCustomer();
+    // this.patchCustomer();
     // this.putCustomer();
   },
 };

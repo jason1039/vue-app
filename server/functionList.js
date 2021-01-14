@@ -3,7 +3,29 @@ const Tables = require('./Tables.json');
 function getWhereJoinString(joinCode, wheres, tables) {
     let wheres_ary = [];
     Object.keys(wheres).forEach(where => {
-        wheres_ary.push(`${getTableFromColumn(where, tables, joinCode)} = '${wheres[where]}' `);
+        switch (wheres[where].relation) {
+            case "=":
+                wheres_ary.push(`${getTableFromColumn(where, tables, joinCode)} = '${wheres[where]}' `);
+                break;
+            case "like":
+                wheres_ary.push(`${getTableFromColumn(where, tables, joinCode)} like '%${wheres[where]}%' `);
+                break;
+            case "<>":
+                wheres_ary.push(`${getTableFromColumn(where, tables, joinCode)} <> '${wheres[where]}' `);
+                break;
+            case ">":
+                wheres_ary.push(`${getTableFromColumn(where, tables, joinCode)} > '${wheres[where]}' `);
+                break;
+            case ">=":
+                wheres_ary.push(`${getTableFromColumn(where, tables, joinCode)} >= '${wheres[where]}' `);
+                break;
+            case "<":
+                wheres_ary.push(`${getTableFromColumn(where, tables, joinCode)} < '${wheres[where]}' `);
+                break;
+            case "<=":
+                wheres_ary.push(`${getTableFromColumn(where, tables, joinCode)} <= '${wheres[where]}' `);
+                break;
+        }
     });
     return wheres_ary.join('and ');
 }

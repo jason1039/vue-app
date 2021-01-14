@@ -1,6 +1,6 @@
 <template>
   <div class="view">
-    <h1>新增客戶</h1>
+    <h1>編輯客戶</h1>
     <div class="row">
       <div class="col-4">客戶名稱</div>
       <input type="text" class="col-16" v-model="AddData.customername" />

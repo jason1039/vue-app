@@ -9,6 +9,7 @@
             "customerprovince",
             "customerarea",
             "customercity",
+            "customertown",
             "customeraddr",
             "createdate"
         ],
