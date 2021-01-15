@@ -146,11 +146,14 @@ function patchUpdateString(data_obj, where_obj, update_ary, tables, data, wheres
             data_obj[y][x] = data[x];
         });
     });
+    console.log(wheres);
     Object.keys(wheres).forEach(x => {
+        console.log(patchTablesFromColumn(x, tables));
         patchTablesFromColumn(x, tables).forEach(y => {
             where_obj[y][x] = wheres[x];
         });
     });
+    // console.log(where_obj);
     Object.keys(data_obj).forEach(x => {
         let data_ary = [];
         let where_ary = [];

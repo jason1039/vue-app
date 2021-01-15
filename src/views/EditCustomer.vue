@@ -185,26 +185,27 @@ export default {
       this.$router.go(-1);
     },
     submit() {
-      let that = this;
-      let submitData = JSON.parse(JSON.stringify(this.$data.EditData));
-      submitData.customercontact.forEach((contact, index) => {
-        if (!contact.contactpersonname) {
-          submitData.customercontact.splice(index, 1);
-        } else {
-          contact.customercontactnumbers.forEach((number, index) => {
-            if (!number.customercontactnumber)
-              contact.customercontactnumbers.splice(index, 1);
-          });
-        }
-      });
-      this.axios
-        .post(`/customer`, { customer: [submitData] })
-        .then(() => {
-          that.$router.go(-1);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      this.setAxiosEditData();
+      // let that = this;
+      // let submitData = JSON.parse(JSON.stringify(this.$data.EditData));
+      // submitData.customercontact.forEach((contact, index) => {
+      // if (!contact.contactpersonname) {
+      // submitData.customercontact.splice(index, 1);
+      // } else {
+      // contact.customercontactnumbers.forEach((number, index) => {
+      // if (!number.customercontactnumber)
+      // contact.customercontactnumbers.splice(index, 1);
+      // });
+      // }
+      // });
+      // this.axios
+      // .post(`/customer`, { customer: [submitData] })
+      // .then(() => {
+      // that.$router.go(-1);
+      // })
+      // .catch((err) => {
+      // console.log(err);
+      // });
     },
     reset() {
       this.$data.setData = {
@@ -221,6 +222,33 @@ export default {
         .then((request) => {
           that.EditData = request.data[0];
           that.OldData = JSON.parse(JSON.stringify(request.data[0]));
+        });
+    },
+    setAxiosEditData() {
+      let id = this.$route.params.customerid;
+      let data = JSON.parse(JSON.stringify(this.$data.EditData));
+      Object.keys(data).forEach((x) => {
+        if (typeof data[x] == `object`) delete data[x];
+      });
+      delete data.customerid;
+      console.log(data);
+      this.axios
+        .patch("/customer", {
+          params: {
+            data: data,
+            wheres: {
+              custimerid: id,
+            },
+          },
+        })
+        .then((response) => {
+          console.log(response);
+          // this.$data.CustomerList = response.data.recordset;
+        })
+        .catch((err) => {
+          console.log(
+            JSON.parse(err.response.request.response).originalError.info.message
+          );
         });
     },
   },
@@ -261,7 +289,7 @@ export default {
       handler: async function () {
         // console.log(this.$data.EditData);
       },
-      deep: true,
+      deep: false,
     },
   },
   components: {
