@@ -162,6 +162,9 @@ export default {
       deep: true,
     },
   },
+  mounted() {
+    this.pushContactNumber();
+  },
 };
 </script>
 <style scoped>

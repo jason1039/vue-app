@@ -120,7 +120,6 @@ export default {
           },
         })
         .then((response) => {
-          console.log(response.data.recordset);
           this.$data.CustomerList = response.data.recordset;
         })
         .catch((err) => {
@@ -307,14 +306,10 @@ export default {
   },
   created() {
     this.$data.AdministrativeDistrict = province_city_china;
-    console.log(this.$data.AdministrativeDistrict);
     this.getCustomerList();
     // this.postCustomer();
     // this.patchCustomer();
     // this.putCustomer();
-    this.axios.get("/Object/customer", { params: { id: 1 } }).then(() => {
-      console.log("end");
-    });
   },
 };
 </script>

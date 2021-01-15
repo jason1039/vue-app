@@ -3,47 +3,53 @@
     <h1>編輯客戶</h1>
     <div class="row">
       <div class="col-4">客戶名稱</div>
-      <input type="text" class="col-16" v-model="AddData.customername" />
+      <input
+        type="text"
+        class="col-16"
+        v-model="EditData.customername"
+        disabled="disabled"
+      />
       <div class="col-4" v-if="chinaShow.chinaprovince">客戶位置(省)</div>
       <chinaProvince
         v-if="chinaShow.chinaprovince"
         :chinaprovinces="AdministrativeDistrict.province"
         class_str="col-6"
-        :chinaprovince.sync="AddData.customerprovince"
+        :chinaprovince.sync="EditData.customerprovince"
       ></chinaProvince>
       <div class="col-4" v-if="chinaShow.chinacity">客戶位置(市)</div>
       <chinaCity
         v-if="chinaShow.chinacity"
         :chinacitys="AdministrativeDistrict.city"
         class_str="col-6"
-        :chinacity.sync="AddData.customercity"
-        :chinaprovince.sync="AddData.customerprovince"
+        :chinacity.sync="EditData.customercity"
+        :chinaprovince.sync="EditData.customerprovince"
       ></chinaCity>
       <div class="col-4" v-if="chinaShow.chinaarea">客戶位置(區)</div>
       <chinaArea
         v-if="chinaShow.chinaarea"
         :chinaareas="AdministrativeDistrict.area"
         class_str="col-6"
-        :chinaarea.sync="AddData.customerarea"
-        :chinaprovince.sync="AddData.customerprovince"
-        :chinacity.sync="AddData.customercity"
+        :chinaarea.sync="EditData.customerarea"
+        :chinaprovince.sync="EditData.customerprovince"
+        :chinacity.sync="EditData.customercity"
       ></chinaArea>
       <div class="col-4" v-if="chinaShow.chinatown">客戶位置(街)</div>
       <chinaTown
         v-if="chinaShow.chinatown"
         :chinatowns="AdministrativeDistrict.town"
         class_str="col-6"
-        :chinaarea.sync="AddData.customerarea"
-        :chinaprovince.sync="AddData.customerprovince"
-        :chinacity.sync="AddData.customercity"
-        :chinatown.sync="AddData.customertown"
+        :chinaarea.sync="EditData.customerarea"
+        :chinaprovince.sync="EditData.customerprovince"
+        :chinacity.sync="EditData.customercity"
+        :chinatown.sync="EditData.customertown"
       ></chinaTown>
       <div class="col-4">客戶地址</div>
-      <input type="text" class="col-6" v-model="AddData.customeraddr" />
+      <input type="text" class="col-6" v-model="EditData.customeraddr" />
     </div>
     <h3>聯絡人</h3>
     <CustomerContact
-      v-for="(item, index) in AddData.customercontact"
+      v-for="(item, index) in EditData.customercontact"
+      :customercontactid.sync="item.customercontactid"
       :contactpersonname.sync="item.contactpersonname"
       :sex.sync="item.sex"
       :agegroup.sync="item.agegroup"
@@ -58,15 +64,24 @@
     <div class="col-20 text-right">
       <input
         type="button"
-        class="btn btn-primary"
-        value="新增"
+        class="btn btn-success"
+        style="margin-left: 10%; margin-right: 10%"
+        value="存檔"
         @click="submit()"
       />
       <input
         type="button"
         class="btn btn-secondary"
+        style="margin-left: 10%; margin-right: 10%"
         value="取消"
         @click="cancel()"
+      />
+      <input
+        type="button"
+        class="btn btn-warning"
+        style="margin-left: 10%; margin-right: 10%"
+        value="復原"
+        @click="reset()"
       />
     </div>
   </div>
@@ -82,7 +97,7 @@ export default {
   data() {
     return {
       AdministrativeDistrict: {},
-      AddData: {
+      EditData: {
         customername: ``,
         customerprovince: ``,
         customercity: ``,
@@ -97,19 +112,28 @@ export default {
         chinaarea: false,
         chinatown: false,
       },
+      setData: {
+        chinacity: false,
+        chinaarea: false,
+        chinatown: false,
+      },
+      OldData: {},
     };
   },
   methods: {
     async computeCity() {
       if (
         !this.$data.AdministrativeDistrict.city.filter(
-          (x) => x.province == this.$data.AddData.customerprovince
+          (x) => x.province == this.$data.EditData.customerprovince
         ).length
       ) {
-        this.$data.AddData.customercity = "01";
+        this.$data.EditData.customercity = "01";
         this.$data.chinaShow.chinacity = false;
       } else {
-        this.$data.AddData.customercity = "";
+        if (this.$data.setData.chinacity) {
+          this.$data.EditData.customercity = "";
+          this.$data.setData.chinacity = true;
+        }
         this.$data.chinaShow.chinacity = true;
       }
       await this.computeArea();
@@ -118,14 +142,17 @@ export default {
       if (
         !this.$data.AdministrativeDistrict.area.filter(
           (x) =>
-            x.province == this.$data.AddData.customerprovince &&
-            x.city == this.$data.AddData.customercity
+            x.province == this.$data.EditData.customerprovince &&
+            x.city == this.$data.EditData.customercity
         ).length
       ) {
-        this.$data.AddData.customerarea = "01";
+        this.$data.EditData.customerarea = "01";
         this.$data.chinaShow.chinaarea = false;
       } else {
-        this.$data.AddData.customerarea = "";
+        if (this.$data.setData.chinaarea) {
+          this.$data.EditData.customerarea = "";
+          this.$data.setData.chinaarea = true;
+        }
         this.$data.chinaShow.chinaarea = true;
       }
       await this.computeTown();
@@ -134,20 +161,23 @@ export default {
       if (
         !this.$data.AdministrativeDistrict.town.filter(
           (x) =>
-            x.province == this.$data.AddData.customerprovince &&
-            x.city == this.$data.AddData.customercity &&
-            x.area == this.$data.AddData.customerarea
+            x.province == this.$data.EditData.customerprovince &&
+            x.city == this.$data.EditData.customercity &&
+            x.area == this.$data.EditData.customerarea
         ).length
       ) {
-        this.$data.AddData.customertown = "01";
+        this.$data.EditData.customertown = "01";
         this.$data.chinaShow.chinatown = false;
       } else {
-        this.$data.AddData.customertown = "";
+        if (this.$data.setData.chinatown) {
+          this.$data.EditData.customertown = "";
+          this.$data.setData.chinatown = true;
+        }
         this.$data.chinaShow.chinatown = true;
       }
     },
     pushContact() {
-      this.$data.AddData.customercontact.push({
+      this.$data.EditData.customercontact.push({
         customercontactnumbers: [{}],
       });
     },
@@ -156,7 +186,7 @@ export default {
     },
     submit() {
       let that = this;
-      let submitData = JSON.parse(JSON.stringify(this.$data.AddData));
+      let submitData = JSON.parse(JSON.stringify(this.$data.EditData));
       submitData.customercontact.forEach((contact, index) => {
         if (!contact.contactpersonname) {
           submitData.customercontact.splice(index, 1);
@@ -176,33 +206,50 @@ export default {
           console.log(err);
         });
     },
+    reset() {
+      this.$data.setData = {
+        chinacity: false,
+        chinaarea: false,
+        chinatown: false,
+      };
+      this.$data.EditData = JSON.parse(JSON.stringify(this.$data.OldData));
+    },
+    async getData(id) {
+      let that = this;
+      this.axios
+        .get("/Object/customer", { params: { id: id } })
+        .then((request) => {
+          that.EditData = request.data[0];
+          that.OldData = JSON.parse(JSON.stringify(request.data[0]));
+        });
+    },
   },
   watch: {
-    "AddData.customerprovince": {
+    "EditData.customerprovince": {
       handler: async function () {
         await this.computeCity();
       },
       deep: true,
     },
-    "AddData.customercity": {
+    "EditData.customercity": {
       handler: async function () {
         await this.computeArea();
       },
       deep: true,
     },
-    "AddData.customerarea": {
+    "EditData.customerarea": {
       handler: async function () {
         await this.computeTown();
       },
       deep: true,
     },
-    "AddData.customercontact.customercontactnumbers": {
+    "EditData.customercontact.customercontactnumbers": {
       handler: async function () {
         let count = 0;
-        this.$data.AddData.customercontact.filter((item, index) => {
+        this.$data.EditData.customercontact.filter((item, index) => {
           if (!item.contactpersonname) count++;
           if (count > 1) {
-            this.$data.AddData.customercontact.splice(index, 1);
+            this.$data.EditData.customercontact.splice(index, 1);
             count--;
           }
         });
@@ -210,9 +257,9 @@ export default {
       },
       deep: true,
     },
-    AddData: {
+    EditData: {
       handler: async function () {
-        // console.log(this.$data.AddData);
+        // console.log(this.$data.EditData);
       },
       deep: true,
     },
@@ -227,7 +274,9 @@ export default {
   computed: {},
   created() {
     this.$data.AdministrativeDistrict = province_city_china;
-    this.pushContact();
+  },
+  async mounted() {
+    await this.getData(this.$route.params.customerid);
   },
 };
 </script>

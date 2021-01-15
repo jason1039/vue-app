@@ -1,4 +1,6 @@
 const Tables = require('./Tables.json');
+const sql = require('mssql');
+const config = require('./config.js');
 //輸出WhereString
 function getWhereJoinString(joinCode, wheres, tables) {
     let wheres_ary = [];
@@ -359,6 +361,50 @@ function getMainTable(tables) {
     return mainTable;
 }
 
+function combineResultObject(query_ary, tableName, keyName, key) {
+    let result = [];
+    let rows = query_ary[tableName].data;
+    rows.filter(row => row[keyName] == key).forEach(item => {
+        let subTables = Tables[tableName].ForeignTables;
+        subTables.forEach(subTable => {
+            item[subTable] = combineResultObject(query_ary, subTable, Tables[tableName].Key, item[subTable, Tables[tableName].Key]);
+        });
+        result.push(item);
+    });
+    return result;
+}
+
+async function getQuery(query_str) {
+    const promise = new Promise((resolve, reject) => {
+        sql.connect(config, function (connectERR) {
+            if (connectERR) console.log(connectERR);
+            //create Request object
+            var request = new sql.Request();
+            request.query(query_str, function (queryERR, recordset) {
+                if (queryERR) console.log(queryERR);
+                let temp = recordset.recordset;
+                temp = temp.filter(row => {
+                    let delCheck = true;
+                    Object.keys(row).forEach(item => {
+                        delCheck = delCheck && row[item] == null;
+                    });
+                    return !delCheck;
+                });
+                resolve(temp);
+            });
+        });
+    });
+    return promise;
+}
+
+function getSubTables(tableName) {
+    let obj = {}
+    let subTables = Tables[tableName].ForeignTables;
+    subTables.forEach(x => {
+        obj[x] = getSubTables(x);
+    });
+    return obj;
+}
 
 module.exports = {
     getWhereJoinString: getWhereJoinString,
@@ -370,4 +416,7 @@ module.exports = {
     postInsertString: postInsertString,
     patchUpdateString: patchUpdateString,
     putUpdateString: putUpdateString,
+    combineResultObject: combineResultObject,
+    getQuery: getQuery,
+    getSubTables: getSubTables
 }

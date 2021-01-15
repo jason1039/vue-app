@@ -7,23 +7,26 @@ function main() {
     let foreign_temp = [];
     files.forEach(x => {
         let fileContent = readFileContent(`${folderPath}/${x}`);
-        let fileLine_ary = readFileLine(fileContent);
-        fileLine_ary.forEach(y => {
-            let tableName = getTableName(y);
-            let columns = getColumns(y);
-            let foreignTable = getForeignTable(columns);
-            let primaryKey = getPrimaryKey(columns);
-            let columnsName = getColumnName(columns);
-            tables[tableName] = {};
-            tables[tableName].Columns = columnsName;
-            tables[tableName].Key = primaryKey;
-            tables[tableName].ForeignTables = [];
-            if (foreignTable)
-                foreign_temp.push({
-                    primaryTable: foreignTable,
-                    foreignTable: tableName
-                });
-        });
+        fileContent = fileContent.replace(/\r\n|\n/g, "");
+        let result = fileContent;
+        while (/\s{2}/g.test(result)) {
+            result = result.replace(/\s{2}/g, " ");
+        }
+        fileContent = result;
+        let tableName = getTableName(fileContent);
+        let columns = getColumns(fileContent);
+        let foreignTable = getForeignTable(columns);
+        let primaryKey = getPrimaryKey(columns);
+        let columnsName = getColumnName(columns);
+        tables[tableName] = {};
+        tables[tableName].Columns = columnsName;
+        tables[tableName].Key = primaryKey;
+        tables[tableName].ForeignTables = [];
+        if (foreignTable)
+            foreign_temp.push({
+                primaryTable: foreignTable,
+                foreignTable: tableName
+            });
     });
     foreign_temp.forEach(x => {
         tables[x.primaryTable].ForeignTables.push(x.foreignTable);

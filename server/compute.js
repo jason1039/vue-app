@@ -1,7 +1,18 @@
 const Tables = require('./Tables.json');
 const sql = require('mssql');
 const config = require('./config.js');
-const { getWhereJoinString, getTables, getJoinCode, getJoinString, tablesP, getColumnsJoinString, postInsertString, patchUpdateString, putUpdateString } = require('./functionList.js');
+const { getWhereJoinString,
+    getTables,
+    getJoinCode,
+    getJoinString,
+    tablesP,
+    getColumnsJoinString,
+    postInsertString,
+    patchUpdateString,
+    putUpdateString,
+    combineResultObject,
+    getQuery,
+    getSubTables } = require('./functionList.js');
 //新增get用法
 function addAppGet(app, tableName) {
     let tableList = getTables(tableName);
@@ -61,12 +72,14 @@ function addAppgetObj(app, tableName) {
             let join = [];
             let key;
             let str = ``;
+            let del_falg = [];
             x.tableList.forEach((y, index) => {
                 let str = `${y} ${String.fromCharCode(65 + index)} `;
                 if (key)
-                    str += `on ${String.fromCharCode(65 + index - 1)}.${key} = ${String.fromCharCode(65 + index)}.${key} `;
+                    str += `on ${String.fromCharCode(65 + index - 1)}.${key} = ${String.fromCharCode(65 + index)}.${key} and ${String.fromCharCode(65 + index)}.del_falg = 'N' `;
                 key = Tables[y].Key;
                 join.push(str);
+                del_falg.push(`${String.fromCharCode(65 + index)}.del_flag = 'N' `);
             });
             query_ary[name] = {
                 query_str: `select ${mainCode}.* from ${join.join('left join ')}where A.${Tables[tableName].Key} = '${id}' `,
@@ -77,86 +90,9 @@ function addAppgetObj(app, tableName) {
         for (let i = 0; i < Object.keys(query_ary).length; i++) {
             query_ary[Object.keys(query_ary)[i]].data = await getQuery(query_ary[Object.keys(query_ary)[i]].query_str);
         }
-        query_ary[tableName].data.forEach(x => {
-            Object.keys(x).forEach(y => {
-                obj[tableName][y] = x[y];
-            });
-        });
-        delete query_ary[tableName];
-        let father = tableName;
-        obj_temp = obj[father];
-        temp = [];
-        let testCount = 0;
-        while (Object.keys(query_ary).length && testCount < 5) {
-            Object.keys(query_ary).forEach(itemName => {
-                if (query_ary[itemName].father == father) {
-                    query_ary[itemName].data.forEach(dataRow => {
-                        console.log(dataRow);
-                        Object.keys(dataRow).forEach(dataName => {
-                            obj_temp[itemName][dataName] = dataRow[dataName];
-                        })
-                    });
-                    delete query_ary[itemName];
-                    temp.push(itemName);
-                }
-            });
-            let runWhile = true;
-            while (runWhile) {
-                let father_temp = temp.shift();
-                Object.keys(query_ary).every(itemName => {
-                    if (query_ary[itemName].father == father_temp) {
-                        obj_temp = obj_temp[father_temp];
-                        father = father_temp;
-                        runWhile = false;
-                    }
-                });
-            }
-            testCount++;
-        }
-        console.log('whileEnd');
-        console.log(obj);
-        // obj_temp = obj;
-        // let testCount = 0
-        // while (Object.keys(query_ary).length && testCount < 1) {
-        //     Object.keys(obj_temp).forEach(x => {
-        //         obj_temp = obj_temp[x];
-        //         query_ary[x].data.forEach(y => {
-        //             Object.keys(y).forEach(z => {
-        //                 obj_temp[z] = y[z];
-        //             });
-        //         });
-        //         delete query_ary[x];
-        //     });
-        //     // obj_temp = obj_temp[]
-        //     testCount++;
-        // };
-        // console.log(obj);
-        res.send();
+        let result = combineResultObject(query_ary, tableName, Tables[tableName].Key, id);
+        res.send(result);
     });
-}
-
-async function getQuery(query_str) {
-    const promise = new Promise((resolve, reject) => {
-        sql.connect(config, function (connectERR) {
-            if (connectERR) console.log(connectERR);
-            //create Request object
-            var request = new sql.Request();
-            request.query(query_str, function (queryERR, recordset) {
-                if (queryERR) console.log(queryERR);
-                resolve(recordset.recordset);
-            });
-        });
-    });
-    return promise;
-}
-
-function getSubTables(tableName) {
-    let obj = {}
-    let subTables = Tables[tableName].ForeignTables;
-    subTables.forEach(x => {
-        obj[x] = getSubTables(x);
-    });
-    return obj;
 }
 
 //新增post用法
@@ -170,37 +106,13 @@ function addAppPost(app, tableName) {
             obj.columnValues.forEach(x => {
                 request.input(x.columnKey, x.columnValue);
             });
+            console.log(obj.insert_str);
             request.query(obj.insert_str, function (queryERR, recordset) {
                 if (queryERR) console.log(queryERR);
                 res.send(recordset);
             });
         });
     });
-    // let tableList = getTables(tableName);
-    // tableList.forEach(tables => {
-    //     let insert_obj = {};
-    //     tables.forEach(item => {
-    //         insert_obj[item] = {};
-    //     });
-    //     let tablesSet = new Set(tables);
-    //     tablesP(tables).forEach(x => {
-    //         app.post(`/${x.join('&')}`, function (req, res) {
-    //             let insert_str = postInsertString(insert_obj, tablesSet, req.body.params.data, tables);
-    //             sql.connect(config, function (connectERR) {
-    //                 if (connectERR) console.log(connectERR);
-    //                 //create Request object
-    //                 var request = new sql.Request();
-    //                 Object.keys(req.body.params.data).forEach(x => {
-    //                     request.input(x, req.body.params.data[x]);
-    //                 });
-    //                 request.query(insert_str, function (queryERR, recordset) {
-    //                     if (queryERR) console.log(queryERR);
-    //                     res.send(recordset);
-    //                 });
-    //             });
-    //         });
-    //     });
-    // });
 }
 
 //新增patch用法
