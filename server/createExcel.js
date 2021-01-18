@@ -20,6 +20,7 @@ function main(res, excelObj) {
         let thisSheet = excelObj[sheetName];
         thisSheet.forEach(cell => {
             worksheet.getRow(cell.row).getCell(cell.col).value = cell.value;
+            worksheet.getRow(cell.row).getCell(cell.col).
             if (cell.merge ? cell.merge.col || cell.merge.row : false) {
                 let mergeCol = cell.merge.col || 1;
                 let mergeRow = cell.merge.row || 1;
