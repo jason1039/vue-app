@@ -1,0 +1,168 @@
+{
+    "testWs1": [
+        {
+            "col": 1,
+            "row": 1,
+            "value": "真旺2020年09月庫存總表",
+            "fs": 16,
+            "ff": "宋体",
+            "bl": true,
+            "bg": "#F9F900",
+            "cle": 12,
+            "rle": 1,
+            "height": 30,
+            "note": {
+                "text": "test",
+                "margins": {
+                    "insetmode": "custom",
+                    "inset": [
+                        0.25,
+                        0.25,
+                        0.35,
+                        0.35
+                    ]
+                }
+            }
+        },
+        {
+            "col": 1,
+            "row": 2,
+            "value": "編號",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "width": 5,
+            "cle": 1,
+            "rle": 2
+        },
+        {
+            "col": 2,
+            "row": 2,
+            "value": "原廠",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "width": 5,
+            "cle": 1,
+            "rle": 2
+        },
+        {
+            "col": 3,
+            "row": 2,
+            "value": "品名",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "cle": 1,
+            "rle": 2
+        },
+        {
+            "col": 4,
+            "row": 2,
+            "value": "規格",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "cle": 1,
+            "rle": 2
+        },
+        {
+            "col": 5,
+            "row": 2,
+            "value": "上月庫存",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "width": 10,
+            "cle": 1,
+            "rle": 2
+        },
+        {
+            "col": 6,
+            "row": 2,
+            "value": "上月金額",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "width": 10,
+            "cle": 1,
+            "rle": 2
+        },
+        {
+            "col": 7,
+            "row": 2,
+            "value": "單價\rRMB",
+            "fs": 10,
+            "bl": 1,
+            "ff": 1,
+            "fc": "#FF0000",
+            "width": 5,
+            "cle": 1,
+            "rle": 2
+        },
+        {
+            "col": 8,
+            "row": 2,
+            "value": "含稅",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "fc": "#FF0000",
+            "width": 3,
+            "cle": 1,
+            "rle": 2
+        },
+        {
+            "col": 9,
+            "row": 2,
+            "value": "總庫存",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "fc": "#FF0000",
+            "width": 7,
+            "cle": 1,
+            "rle": 2
+        },
+        {
+            "col": 10,
+            "row": 2,
+            "value": "本月庫存金額",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "width": 7,
+            "cle": 1,
+            "rle": 2
+        },
+        {
+            "col": 11,
+            "row": 2,
+            "value": "本月累計",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "width": 10,
+            "cle": 2,
+            "rle": 1
+        },
+        {
+            "col": 11,
+            "row": 3,
+            "value": "進貨",
+            "fs": 10,
+            "bl": 1,
+            "ff": 9,
+            "width": 5
+        },
+        {
+            "col": 12,
+            "row": 3,
+            "value": "出貨",
+            "size": 10,
+            "ff": 9,
+            "width": 5
+        }
+    ],
+    "testWs2": []
+}

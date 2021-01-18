@@ -1,9 +1,25 @@
+//https://github.com/exceljs/exceljs/blob/HEAD/README_zh.md
 const Excel = require('exceljs');
 const fontClass = new Set(['size', 'family', 'bold', 'italics', 'underline', 'color']);
 const alignmentClass = new Set(['align', 'vertical', 'shrinkToFit', 'wrapText']);
 const fillClass = new Set(['bgColor']);
-const excelTest = { "testWs1": [{ col: 1, row: 1, value: "真旺2020年09月庫存總表", style: { size: 16, family: "宋体", bold: true, bgColor: '#F9F900' }, merge: { col: 12, row: 1 }, height: 30 }, { col: 1, row: 2, value: "編號", style: { size: 10, name: 'Arial', bold: true }, width: 5, merge: { col: 1, row: 2 } }, { col: 2, row: 2, value: "原廠", style: { size: 10, name: 'Arial', bold: true }, width: 5, merge: { col: 1, row: 2 } }, { col: 3, row: 2, value: "品名", style: { size: 10, name: 'Arial', bold: true }, merge: { col: 1, row: 2 } }, { col: 4, row: 2, value: "規格", style: { size: 10, name: 'Arial', bold: true }, merge: { col: 1, row: 2 } }, { col: 5, row: 2, value: "上月庫存", style: { size: 10, name: 'Arial', bold: true }, width: 10, merge: { col: 1, row: 2 } }, { col: 6, row: 2, value: "上月金額", style: { size: 10, name: 'Arial', bold: true }, width: 10, merge: { col: 1, row: 2 } }, { col: 7, row: 2, value: `單價\rRMB`, style: { color: '#FF0000', size: 10, name: '宋体', bold: true }, width: 5, merge: { col: 1, row: 2 } }, { col: 8, row: 2, value: "含稅", style: { color: '#FF0000', size: 10, name: 'Arial', bold: true }, width: 3, merge: { col: 1, row: 2 } }, { col: 9, row: 2, value: "總庫存", style: { color: '#FF0000', size: 10, name: 'Arial', }, width: 7, merge: { col: 1, row: 2 } }, { col: 10, row: 2, value: "本月庫存金額", style: { size: 10, name: 'Arial', }, width: 7, merge: { col: 1, row: 2 } }, { col: 11, row: 2, value: "本月累計", style: { size: 12, name: 'Arial', }, width: 10, merge: { col: 2, row: 1 } }, { col: 11, row: 3, value: "進貨", style: { size: 10, name: 'Arial', }, width: 5, }, { col: 12, row: 3, value: "出貨", size: 10, name: 'Arial', width: 5, }], "testWs2": [] }
-
+const excelTest = require('./excelTest.json');
+// createFillStyle : bg(背景顏色)RGB
+// createAlignmentStyle:vt(垂直), ht(水平), tb(换行), tr(旋转)
+// createFontStyle：ff(样式), fc(颜色), bl(粗体), it(斜体), fs(大小), cl(删除线), ul(下划线)
+// 0: '微软雅黑',
+// 1: '宋体（Song）',
+// 2: '黑体（ST Heiti）',
+// 3: '楷体（ST Kaiti）',
+// 4: '仿宋（ST FangSong）',
+// 5: '新宋体（ST Song）',
+// 6: '华文新魏',
+// 7: '华文行楷',
+// 8: '华文隶书',
+// 9: 'Arial',
+// 10: 'Times New Roman ',
+// 11: 'Tahoma ',
+// 12: 'Verdana',
 function main(res, excelObj) {
     // 建立標籤為紅色的表格
     //var sheet = workbook.addWorksheet('My Sheet', {properties:{tabColor:{argb:'FFC0000'}}});
@@ -17,16 +33,11 @@ function main(res, excelObj) {
     Object.keys(excelObj).forEach((sheetName, index) => {
         sheets[sheetName] = workbook.addWorksheet(sheetName);
         let worksheet = workbook.getWorksheet(index + 1);
-        let thisSheet = excelObj[sheetName];
-        thisSheet.forEach(cell => {
-            worksheet.getRow(cell.row).getCell(cell.col).value = cell.value;
-            worksheet.getRow(cell.row).getCell(cell.col).
-            if (cell.merge ? cell.merge.col || cell.merge.row : false) {
-                let mergeCol = cell.merge.col || 1;
-                let mergeRow = cell.merge.row || 1;
-                worksheet.mergeCells(cell.row, cell.col, cell.row + mergeRow - 1, cell.col + mergeCol - 1);
-            }
-        });
+        setStyleAndValue(excelObj[sheetName], worksheet);
+        setMerge(excelObj[sheetName], worksheet);
+        setBorder(excelObj[sheetName], worksheet);
+        setHeightWidth(excelObj[sheetName], worksheet);
+        setNote(excelObj[sheetName], worksheet);
     })
     res.status(200);
     res.setHeader('Content-Type', 'application/octet-stream');
@@ -36,104 +47,203 @@ function main(res, excelObj) {
     );
     workbook.xlsx.write(res).then(() => {
         res.end();
+    });
+}
+var exportExcel = exports.exportExcel = async function (luckysheet) { // 参数为luckysheet.getluckysheetfile()获取的对象
+    // 1.创建工作簿，可以为工作簿添加属性
+    const workbook = new Excel.Workbook()
+    // 2.创建表格，第二个参数可以配置创建什么样的工作表
+    luckysheet.every(function (table) {
+        if (table.data.length === 0) return true
+        const worksheet = workbook.addWorksheet(table.name)
+        // 3.设置单元格合并,设置单元格边框,设置单元格样式,设置值
+        setMerge(table.config.merge, worksheet);
+        setStyleAndValue(table.data, worksheet);
+        setBorder(table.config.borderInfo, worksheet);
+        return true
     })
-    // return new Promise(resolve => {
-    //     if (!excelObj) excelObj = excelTest;
-    //     let wookbook = new xl.Workbook();
-    //     let sheets = {};
-    //     Object.keys(excelObj).forEach((sheetName, index) => {
-    //         let thisSheet = excelObj[sheetName];
-    //         sheets[sheetName] = wookbook.addWorksheet(sheetName);
-    //         let rowHeight = [];
-    //         let columnWidth = [];
-    //         thisSheet.forEach(cell => {
-    //             let cellPosition = [cell.row, cell.col];
-    //             if (cell.merge ? cell.merge.col || cell.merge.row : false) {
-    //                 let mergeCol = cell.merge.col || 0;
-    //                 let mergeRow = cell.merge.row || 0;
-    //                 cellPosition = [cell.row, cell.col, cell.row + mergeRow - 1, cell.col + mergeCol - 1, true];
-    //             }
-    //             sheets[sheetName].cell(...cellPosition).string(cell.value.replace(/[\r\n]/g, String.fromCharCode(10))).style(createStyle(wookbook, cell.style));
-    //             createStyle(wookbook, cell.style);
-    //             if (cell.height) rowHeight[cell.row] = cell.height; else rowHeight[cell.row] = 15;
-    //             if (cell.width) columnWidth[cell.col] = cell.width; else columnWidth[cell.row] = 12;
-    //         });
-    //         for (let i = 1; i < rowHeight.length; i++) {
-    //             sheets[sheetName].row(i).setHeight(rowHeight[i] ? rowHeight[i] : 15);
-    //         }
-    //         for (let i = 1; i < columnWidth.length; i++) {
-    //             sheets[sheetName].column(i).setWidth(columnWidth[i] ? columnWidth[i] : 12);
-    //         }
-    //     });
-    //     wookbook.write('test', res);
-    //     // wookbook.writeToBuffer().then((buffer) => {
-    //     //     resolve(buffer);
-    //     // });
-    // });
+    // 4.写入 buffer
+    const buffer = await workbook.xlsx.writeBuffer()
+    return buffer
 }
 
-function createStyle(wb, styleObj) {
-    if (!styleObj) styleObj = {};
-    let style = {
-        alignment: {
-            horizontal: 'center',
-            vertical: 'center',
-            shrinkToFit: true,
-            wrapText: true
-        },
-        border: {
-            //style
-            //none, thin, medium, dashed, dotted, thick, double, hair, mediumDashed, dashDot, mediumDashDot, dashDotDot, mediumDashDotDot, slantDashDot
-            left: {
-                style: 'thin',
-                color: '#000000'
-            },
-            right: {
-                style: 'thin',
-                color: '#000000'
-            },
-            bottom: {
-                style: 'thin',
-                color: '#000000'
-            },
-            top: {
-                style: 'thin',
-                color: '#000000'
-            },
-        }
-    };
-    Object.keys(styleObj).forEach(s => {
-        if (fontClass.has(s)) {
-            if (!style.font) style.font = {};
-            let value = styleObj[s];
-            switch (s) {
-                case "family":
-                    s = 'name';
-                    break;
-            }
-            style.font[s] = value;
-        }
-        if (alignmentClass.has(s)) {
-            //horizontal, vertical
-            if (!style.alignment) style.alignment = {};
-            let value = styleObj[s];
-            switch (s) {
-                case "align":
-                    s = 'horizontal';
-                    break;
-            }
-            style.alignment[s] = value;
-        }
-        if (fillClass.has(s)) {
-            if (!style.fill) style.fill = {};
-            style.fill = {
-                type: 'pattern',
-                patternType: 'solid',
-                bgColor: styleObj[s],
-                fgColor: styleObj[s],
+var setNote = function (cellArr, worksheet) {
+    cellArr.forEach(cell => {
+        if (cell.note) worksheet.getCell(cell.row, cell.col).note = {
+            texts: [{ "text": cell.note.text }],
+            margins: cell.note.margins,
+            protection: {
+                locked: true,
+                lockText: true
             }
         }
     });
-    return wb.createStyle(style);
+}
+
+var setHeightWidth = function (cellArr, worksheet) {
+    cellArr.forEach(cell => {
+        height(cell, worksheet);
+        width(cell, worksheet);
+    });
+}
+
+var setMerge = function (cellArr, worksheet) {
+    cellArr.forEach(function (cell) { // elem格式：{row : 起始行, cell : 起始列, rl : 合併行數, cl : 合併列數}
+        worksheet.mergeCells(cell.row, cell.col, cell.row + (cell.rle || 1) - 1, cell.col + (cell.cle || 1) - 1);
+    });
+}
+
+var setBorder = function (cellArr, worksheet) {
+    cellArr.forEach(cell => {
+        let border = borderConvert(cell.bt, cell.bs, cell.bc);
+        worksheet.getCell(cell.row, cell.col).border = border;
+    });
+}
+var setStyleAndValue = function (cellArr, worksheet) {
+    cellArr.forEach(cell => {
+        let fill = fillConvert(cell.bg);
+        let font = fontConvert(cell.ff, cell.fc, cell.bl, cell.it, cell.fs, cell.cl, cell.ul);
+        let alignment = alignmentConvert(cell.vt, cell.ht, cell.tb, cell.tr);
+        let value = cell.value;
+        let target = worksheet.getCell(cell.row, cell.col);//, cell.row + (cell.rl || 1) - 1, cell.col + (cell.cl || 1) - 1
+        target.fill = fill;
+        target.font = font;
+        target.alignment = alignment;
+        target.value = value;
+    });
+}
+
+var height = function (cell, worksheet) {
+    if (cell.height) worksheet.getRow(cell.row).height = cell.height;
+}
+
+var width = function (cell, worksheet) {
+    if (cell.width) worksheet.getColumn(cell.col).width = cell.width;
+}
+
+var fillConvert = function (bg = `#FFFFFF`) {
+    let fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: bg.replace('#', '') }
+    }
+    return fill;
+}
+
+var fontConvert = function (ff = 0, fc = '#000000', bl = 0, it = 0, fs = 10, cl = 0, ul = 0) { // luckysheet：ff(样式), fc(颜色), bl(粗体), it(斜体), fs(大小), cl(删除线), ul(下划线)
+    const luckyToExcel = {
+        0: '微软雅黑',
+        1: '宋体（Song）',
+        2: '黑体（ST Heiti）',
+        3: '楷体（ST Kaiti）',
+        4: '仿宋（ST FangSong）',
+        5: '新宋体（ST Song）',
+        6: '华文新魏',
+        7: '华文行楷',
+        8: '华文隶书',
+        9: 'Arial',
+        10: 'Times New Roman ',
+        11: 'Tahoma ',
+        12: 'Verdana',
+        num2bl: function (num) {
+            return num === 0 ? false : true
+        }
+    }
+
+    let font = {
+        name: luckyToExcel[ff],
+        family: 1,
+        size: fs,
+        color: { argb: fc.replace('#', '') },
+        bold: luckyToExcel.num2bl(bl),
+        italic: luckyToExcel.num2bl(it),
+        underline: luckyToExcel.num2bl(ul),
+        strike: luckyToExcel.num2bl(cl)
+    }
+
+    return font
+}
+
+var alignmentConvert = function (vt = 'default', ht = 'default', tb = 'default', tr = 'default') { // luckysheet:vt(垂直), ht(水平), tb(换行), tr(旋转)
+    const luckyToExcel = {
+        vertical: {
+            0: 'middle',
+            1: 'top',
+            2: 'bottom',
+            default: 'middle'
+        },
+        horizontal: {
+            0: 'center',
+            1: 'left',
+            2: 'right',
+            default: 'center'
+        },
+        wrapText: {
+            0: false,
+            1: false,
+            2: true,
+            default: false
+        },
+        textRotation: {
+            0: 0,
+            1: 45,
+            2: -45,
+            3: 'vertical',
+            4: 90,
+            5: -90,
+            default: 0
+        }
+    }
+
+    let alignment = {
+        vertical: luckyToExcel.vertical[vt],
+        horizontal: luckyToExcel.horizontal[ht],
+        wrapText: luckyToExcel.wrapText[tb],
+        textRotation: luckyToExcel.textRotation[tr]
+    }
+    return alignment
+
+}
+
+var borderConvert = function (borderType = 'border-all', style = 1, color = '#000') { // 对应luckysheet的config中borderinfo的的参数
+    if (!borderType) {
+        return {}
+    }
+    const luckyToExcel = {
+        type: {
+            'border-all': 'all',
+            'border-top': 'top',
+            'border-right': 'right',
+            'border-bottom': 'bottom',
+            'border-left': 'left'
+        },
+        style: {
+            0: 'none',
+            1: 'thin',
+            2: 'hair',
+            3: 'dotted',
+            4: 'dashDot', // 'Dashed',
+            5: 'dashDot',
+            6: 'dashDotDot',
+            7: 'double',
+            8: 'medium',
+            9: 'mediumDashed',
+            10: 'mediumDashDot',
+            11: 'mediumDashDotDot',
+            12: 'slantDashDot',
+            13: 'thick'
+        }
+    }
+    let template = { style: luckyToExcel.style[style], color: { argb: color.replace('#', '') } }
+    let border = {}
+    if (luckyToExcel.type[borderType] === 'all') {
+        border['top'] = template
+        border['right'] = template
+        border['bottom'] = template
+        border['left'] = template
+    } else {
+        border[luckyToExcel.type[borderType]] = template
+    }
+    return border
 }
 module.exports = main;
