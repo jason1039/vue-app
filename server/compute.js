@@ -14,7 +14,8 @@ const { getWhereJoinString,
     getQuery,
     getSubTables,
     lockUpdateString,
-    getUnDeleteJoinString } = require('./functionList.js');
+    getUnDeleteJoinString,
+    unLockUpdateString } = require('./functionList.js');
 const { promises } = require('dns');
 //新增get用法
 function addAppGet(app, tableName) {
@@ -198,19 +199,31 @@ function addAppDelete(app, tableName) {
     app.delete(`/${tableName}`, async function (req, res) {
         let id = req.query.id;
         let delObj = await lockUpdateString(tableName, id);
-        // console.log(delObj);
-        // sql.connect(config, function (connectERR) {
-        //     if (connectERR) console.log(connectERR);
-        //     var request = new sql.Request();
-        //     request.query(Object.values(delObj).join(' '), function (queryERR, recordset) {
-        //         if (queryERR) console.log(queryERR);
-        //         res.send();
-        //     });
-        // });
+        sql.connect(config, function (connectERR) {
+            if (connectERR) console.log(connectERR);
+            var request = new sql.Request();
+            request.query(Object.values(delObj).join(' '), function (queryERR, recordset) {
+                if (queryERR) console.log(queryERR);
+                res.send();
+            });
+        });
     })
 }
 
-
+function addAppRecovery(app, tableName) {
+    app.delete(`Recovery/${tableName}`, async function (req, res) {
+        let id = req.query.id;
+        let delObj = await unLockUpdateString(tableName, id);
+        sql.connect(config, function (connectERR) {
+            if (connectERR) console.log(connectERR);
+            var request = new sql.Request();
+            request.query(Object.values(delObj).join(' '), function (queryERR, recordset) {
+                if (queryERR) console.log(queryERR);
+                res.send();
+            });
+        });
+    })
+}
 
 
 
@@ -221,6 +234,7 @@ module.exports = {
     addPost: addAppPost,
     addPatch: addAppPatch,
     addPut: addAppPut,
-    addAppgetObj: addAppgetObj,
-    addAppDelete: addAppDelete
+    addgetObj: addAppgetObj,
+    addDelete: addAppDelete,
+    addRecovery: addAppRecovery
 }

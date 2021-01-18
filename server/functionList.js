@@ -172,7 +172,6 @@ function patchUpdateString(obj, delObj, columnValues) {//data_obj, where_obj, up
             temp.values.push(keyValue);
         }
         Object.keys(row).forEach((item, index) => {
-            // console.log(typeof row[item]);
             if (typeof row[item] == 'string') {
                 let columnKey = inputText(columnValues.length);
                 columnValues.push({
@@ -219,52 +218,66 @@ function patchUpdateString(obj, delObj, columnValues) {//data_obj, where_obj, up
     });
     return { update_str: update_str, columnValues: columnValues, delObj: delObj };
 }
-//帶修正
+//生成Delete字串
 async function lockUpdateString(tableName, id, obj) {
-    // return new Promise((firstResolve, firstReject) => {
-    if (!obj) obj = {};
-    obj[`${tableName}:${id}`] = `update ${tableName} set del_flag = 'Y' where ${Tables[tableName].Key} = '${id}' `;
-    let foreignTables = JSON.parse(JSON.stringify(Tables[tableName].ForeignTables));
-    async function tables(foreignTable) {
-        let query_str = `select ${Tables[foreignTable].Key} from ${foreignTable} where ${Tables[tableName].Key} = '${id}' and del_flag = 'N' `;
-        sql.connect(config, async function (connectERR) {
-            if (connectERR) console.log(connectERR);
-            let request = new sql.Request();
-            request.query(query_str, async function (queryERR, recordset) {
-
-            });
-        });
-    }
-    while (foreignTables.length) {
-        let foreignTable = foreignTables.shift();
-
-    }
-
-
-
-
-
-    for (let i = 0, second = Promise.resolve(); i < foreignTables.length; i++) {
-        const foreignTable = foreignTables[i];
-        let query_str = `select ${Tables[foreignTable].Key} from ${foreignTable} where ${Tables[tableName].Key} = '${id}' and del_flag = 'N' `;
-        second = second.then(_ => new Promise(secondResolve => {
+    return new Promise((allResolve, allRejct) => {
+        if (!obj) obj = {};
+        obj[`${tableName}:${id}`] = `update ${tableName} set del_flag = 'Y' where ${Tables[tableName].Key} = '${id}' `;
+        let foreignTables = JSON.parse(JSON.stringify(Tables[tableName].ForeignTables));
+        for (let i = 0; i < foreignTables.length; i++) {
+            let foreignTable = foreignTables[i];
+            let query_str = `select ${Tables[foreignTable].Key} from ${foreignTable} where ${Tables[tableName].Key} = '${id}' and del_flag = 'N' `;
             sql.connect(config, async function (connectERR) {
                 if (connectERR) console.log(connectERR);
                 let request = new sql.Request();
                 request.query(query_str, async function (queryERR, recordset) {
                     if (queryERR) console.log(queryERR);
-                    for (let j = 0, therd = Promise.resolve(); j < recordset.recordset.length; j++) {
-                        const item = recordset.recordset[j];
-                        therd = therd.then(__ => new Promise(therdReslove => {
-                            therdReslove();
-                        }))
+                    let rows = recordset.recordset;
+                    for (let j = 0; j < rows.length; j++) {
+                        lockUpdateString(foreignTable, rows[j][Tables[foreignTable].Key], obj).then((v) => {
+                            if (i == foreignTables.length - 1 && j == rows.length - 1) {
+                                allResolve(obj);
+                            }
+                        });
+                    }
+                    if (i == foreignTables.length - 1 && rows.length == 0) {
+                        allResolve(obj);
                     }
                 });
             });
-        }))
-    }
-    // firstResolve(obj);
-    // });
+        }
+    });
+}
+
+//生成UnDelete字串
+async function unLockUpdateString(tableName, id, obj) {
+    return new Promise((allResolve, allRejct) => {
+        if (!obj) obj = {};
+        obj[`${tableName}:${id}`] = `update ${tableName} set del_flag = 'N' where ${Tables[tableName].Key} = '${id}' `;
+        let foreignTables = JSON.parse(JSON.stringify(Tables[tableName].ForeignTables));
+        for (let i = 0; i < foreignTables.length; i++) {
+            let foreignTable = foreignTables[i];
+            let query_str = `select ${Tables[foreignTable].Key} from ${foreignTable} where ${Tables[tableName].Key} = '${id}' and del_flag = 'N' `;
+            sql.connect(config, async function (connectERR) {
+                if (connectERR) console.log(connectERR);
+                let request = new sql.Request();
+                request.query(query_str, async function (queryERR, recordset) {
+                    if (queryERR) console.log(queryERR);
+                    let rows = recordset.recordset;
+                    for (let j = 0; j < rows.length; j++) {
+                        unLockUpdateString(foreignTable, rows[j][Tables[foreignTable].Key], obj).then((v) => {
+                            if (i == foreignTables.length - 1 && j == rows.length - 1) {
+                                allResolve(obj);
+                            }
+                        });
+                    }
+                    if (i == foreignTables.length - 1 && rows.length == 0) {
+                        allResolve(obj);
+                    }
+                });
+            });
+        }
+    });
 }
 
 //輸出put更新字串
@@ -351,7 +364,6 @@ function getJoinCode(tableName, tables) {
     let compute_ary = JSON.parse(JSON.stringify(Tables[tableName].ForeignTables));
     let from_str = tableName;
     while (temp.size > 0) {
-        // console.log(obj, tables, temp, compute_ary);
         if (compute_ary.length) {
             let n = compute_ary.shift();
             obj[n] = { code: String.fromCharCode(count), from: from_str };
@@ -505,5 +517,6 @@ module.exports = {
     getQuery: getQuery,
     getSubTables: getSubTables,
     lockUpdateString: lockUpdateString,
-    getUnDeleteJoinString: getUnDeleteJoinString
+    getUnDeleteJoinString: getUnDeleteJoinString,
+    unLockUpdateString: unLockUpdateString
 }

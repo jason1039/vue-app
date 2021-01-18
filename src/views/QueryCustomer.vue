@@ -121,7 +121,6 @@ export default {
         })
         .then((response) => {
           this.$data.CustomerList = response.data.recordset;
-          console.log(response.data.recordset);
         })
         .catch((err) => {
           console.log(
@@ -144,6 +143,26 @@ export default {
       //       JSON.parse(err.response.request.response).originalError.info.message
       //     );
       //   });
+      this.axios({
+        method: "get",
+        url: "/exceltest",
+        responseType: "blob",
+      })
+        .then((response) => {
+          if (!response.data) return;
+          let url = window.URL.createObjectURL(new Blob([response.data]));
+          let link = document.createElement("a");
+          link.style.display = "none";
+          link.href = url;
+          link.setAttribute("download", "excel.xlsx");
+
+          document.body.appendChild(link);
+          link.click();
+          this.download(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     codeToProvince(code) {
       return this.$data.AdministrativeDistrict.province.filter(

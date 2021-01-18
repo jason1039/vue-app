@@ -105,4 +105,4 @@ function getFiles(folerPath) {
 }
 
 
-module.exports = main;
+module.exports = main();
