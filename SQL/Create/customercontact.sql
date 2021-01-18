@@ -10,5 +10,5 @@ create table customercontact
     sing[char] not null default 'N',
     gifts[char] not null default 'N',
     dwell[varchar](50) not null default '',
-    del_falg[char] not null default 'N'
+    del_flag[char] not null default 'N'
 )

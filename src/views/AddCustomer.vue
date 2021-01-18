@@ -167,7 +167,6 @@ export default {
           });
         }
       });
-      console.log(submitData);
       this.axios
         .post(`/customer`, { customer: [submitData] })
         .then(() => {

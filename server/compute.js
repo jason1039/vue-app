@@ -12,7 +12,10 @@ const { getWhereJoinString,
     putUpdateString,
     combineResultObject,
     getQuery,
-    getSubTables } = require('./functionList.js');
+    getSubTables,
+    lockUpdateString,
+    getUnDeleteJoinString } = require('./functionList.js');
+const { promises } = require('dns');
 //新增get用法
 function addAppGet(app, tableName) {
     let tableList = getTables(tableName);
@@ -22,12 +25,13 @@ function addAppGet(app, tableName) {
         tablesP(tables).forEach(x => {
             app.get(`/${x.join('&')}`, function (req, res) {
                 let columns = req.query.columns;
-                let wheres = req.query.wheres;
-                wheres.del_flag = 'N';
+                let wheres = JSON.parse(JSON.stringify(req.query.wheres));
+                let Undelete_str = getUnDeleteJoinString(joinCode, tables);
                 let columns_str = getColumnsJoinString(joinCode, columns, tables);
                 let wheres_str = getWhereJoinString(joinCode, wheres, tables);
                 let query_str = `select ${columns_str} ${from_str} `;
-                if (wheres_str) query_str += wheres;
+                if (wheres_str) query_str += wheres + Undelete_str;
+                else query_str += `where ${Undelete_str}`;
                 sql.connect(config, function (connectERR) {
                     if (connectERR) console.log(connectERR);
                     //create Request object
@@ -76,7 +80,7 @@ function addAppgetObj(app, tableName) {
             x.tableList.forEach((y, index) => {
                 let str = `${y} ${String.fromCharCode(65 + index)} `;
                 if (key)
-                    str += `on ${String.fromCharCode(65 + index - 1)}.${key} = ${String.fromCharCode(65 + index)}.${key} and ${String.fromCharCode(65 + index)}.del_falg = 'N' `;
+                    str += `on ${String.fromCharCode(65 + index - 1)}.${key} = ${String.fromCharCode(65 + index)}.${key} and ${String.fromCharCode(65 + index)}.del_flag = 'N' `;
                 key = Tables[y].Key;
                 join.push(str);
                 del_falg.push(`${String.fromCharCode(65 + index)}.del_flag = 'N' `);
@@ -106,7 +110,6 @@ function addAppPost(app, tableName) {
             obj.columnValues.forEach(x => {
                 request.input(x.columnKey, x.columnValue);
             });
-            console.log(obj.insert_str);
             request.query(obj.insert_str, function (queryERR, recordset) {
                 if (queryERR) console.log(queryERR);
                 res.send(recordset);
@@ -117,36 +120,19 @@ function addAppPost(app, tableName) {
 
 //新增patch用法
 function addAppPatch(app, tableName) {
-    let tableList = getTables(tableName);
-    tableList.forEach(tables => {
-        let data_obj = {};
-        let where_obj = {};
-        tables.forEach(x => {
-            data_obj[x] = {};
-            where_obj[x] = {};
-        });
-        let update_ary = [];
-        tablesP(tables).forEach(x => {
-            app.patch(`/${x.join('&')}`, function (req, res) {
-                let data = req.body.params.data;
-                let wheres = req.body.params.wheres;
-                wheres.del_flag = 'N';
-                let update_str = patchUpdateString(data_obj, where_obj, update_ary, tables, data, wheres);
-                sql.connect(config, function (connectERR) {
-                    if (connectERR) res.send(connectERR);
-                    //create Request object
-                    var request = new sql.Request();
-                    Object.keys(data).forEach(x => {
-                        request.input(x, data[x]);
-                    });
-                    Object.keys(wheres).forEach(x => {
-                        request.input(x, wheres[x]);
-                    });
-                    request.query(update_str, function (queryERR, recordset) {
-                        if (queryERR) console.log(queryERR);
-                        res.send(recordset);
-                    });
-                });
+    app.patch(`/${tableName}`, async function (req, res) {
+        let delObj = await lockUpdateString(tableName, req.body[tableName][0][Tables[tableName].Key]);
+        let obj = patchUpdateString(req.body, delObj);
+        sql.connect(config, async function (connectERR) {
+            if (connectERR) console.log(connectERR);
+            // create Request object
+            var request = new sql.Request();
+            obj.columnValues.forEach(x => {
+                request.input(x.columnKey, x.columnValue);
+            });
+            request.query(obj.update_str + Object.values(obj.delObj).join(' '), function (queryERR, recordset) {
+                if (queryERR) console.log(queryERR);
+                res.send(recordset);
             });
         });
     });
@@ -208,6 +194,22 @@ function addAppPut(app, tableName) {
     });
 }
 
+function addAppDelete(app, tableName) {
+    app.delete(`/${tableName}`, async function (req, res) {
+        let id = req.query.id;
+        let delObj = await lockUpdateString(tableName, id);
+        // console.log(delObj);
+        // sql.connect(config, function (connectERR) {
+        //     if (connectERR) console.log(connectERR);
+        //     var request = new sql.Request();
+        //     request.query(Object.values(delObj).join(' '), function (queryERR, recordset) {
+        //         if (queryERR) console.log(queryERR);
+        //         res.send();
+        //     });
+        // });
+    })
+}
+
 
 
 
@@ -219,5 +221,6 @@ module.exports = {
     addPost: addAppPost,
     addPatch: addAppPatch,
     addPut: addAppPut,
-    addAppgetObj: addAppgetObj
+    addAppgetObj: addAppgetObj,
+    addAppDelete: addAppDelete
 }

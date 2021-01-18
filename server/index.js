@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 // const sqlMap = require('./apiMap.json');
 const Tables = require('./Tables.json');
-const { addGet, addPost, addPatch, addPut, addAppgetObj } = require('./compute.js');
+const { addGet, addPost, addPatch, addPut, addAppgetObj, addAppDelete } = require('./compute.js');
 var app = express();
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
@@ -25,12 +25,16 @@ Object.keys(Tables).forEach(item => {
     //patch
     addPatch(app, item);
     //lock
-
+    addAppDelete(app, item);
     //unlock
 
     //delete
 
 })
+app.get(`/downloadtest`, function (req, res) {
+    const file = `./src/assets/add.png`;
+    res.download(file);
+});
 // Object.keys(sqlMap).forEach(name => {
 //     switch (sqlMap[name].type) {
 //         case "get":

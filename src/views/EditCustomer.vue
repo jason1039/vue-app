@@ -65,23 +65,30 @@
       <input
         type="button"
         class="btn btn-success"
-        style="margin-left: 10%; margin-right: 10%"
+        style="margin-left: 3%; margin-right: 3%"
         value="存檔"
         @click="submit()"
       />
       <input
         type="button"
         class="btn btn-secondary"
-        style="margin-left: 10%; margin-right: 10%"
+        style="margin-left: 3%; margin-right: 3%"
         value="取消"
         @click="cancel()"
       />
       <input
         type="button"
         class="btn btn-warning"
-        style="margin-left: 10%; margin-right: 10%"
+        style="margin-left: 3%; margin-right: 3%"
         value="復原"
         @click="reset()"
+      />
+      <input
+        type="button"
+        class="btn btn-danger"
+        style="margin-left: 3%; margin-right: 3%"
+        value="刪除"
+        @click="lockCustomer()"
       />
     </div>
   </div>
@@ -185,27 +192,28 @@ export default {
       this.$router.go(-1);
     },
     submit() {
-      this.setAxiosEditData();
-      // let that = this;
-      // let submitData = JSON.parse(JSON.stringify(this.$data.EditData));
-      // submitData.customercontact.forEach((contact, index) => {
-      // if (!contact.contactpersonname) {
-      // submitData.customercontact.splice(index, 1);
-      // } else {
-      // contact.customercontactnumbers.forEach((number, index) => {
-      // if (!number.customercontactnumber)
-      // contact.customercontactnumbers.splice(index, 1);
-      // });
-      // }
-      // });
-      // this.axios
-      // .post(`/customer`, { customer: [submitData] })
-      // .then(() => {
-      // that.$router.go(-1);
-      // })
-      // .catch((err) => {
-      // console.log(err);
-      // });
+      let that = this;
+      let data = JSON.parse(JSON.stringify(this.$data.EditData));
+      data.customercontact.forEach((contact, index) => {
+        if (!contact.contactpersonname) {
+          data.customercontact.splice(index, 1);
+        } else {
+          contact.customercontactnumbers.forEach((number, index) => {
+            if (!number.customercontactnumber)
+              contact.customercontactnumbers.splice(index, 1);
+          });
+        }
+      });
+      this.axios
+        .patch("/customer", { customer: [data] })
+        .then(() => {
+          that.$router.go(-1);
+        })
+        .catch((err) => {
+          console.log(
+            JSON.parse(err.response.request.response).originalError.info.message
+          );
+        });
     },
     reset() {
       this.$data.setData = {
@@ -224,26 +232,12 @@ export default {
           that.OldData = JSON.parse(JSON.stringify(request.data[0]));
         });
     },
-    setAxiosEditData() {
-      let id = this.$route.params.customerid;
-      let data = JSON.parse(JSON.stringify(this.$data.EditData));
-      Object.keys(data).forEach((x) => {
-        if (typeof data[x] == `object`) delete data[x];
-      });
-      delete data.customerid;
-      console.log(data);
+    lockCustomer() {
+      let that = this;
       this.axios
-        .patch("/customer", {
-          params: {
-            data: data,
-            wheres: {
-              custimerid: id,
-            },
-          },
-        })
-        .then((response) => {
-          console.log(response);
-          // this.$data.CustomerList = response.data.recordset;
+        .delete("/customer", { params: { id: this.$route.params.customerid } })
+        .then(() => {
+          that.$router.go(-1);
         })
         .catch((err) => {
           console.log(

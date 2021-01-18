@@ -121,12 +121,29 @@ export default {
         })
         .then((response) => {
           this.$data.CustomerList = response.data.recordset;
+          console.log(response.data.recordset);
         })
         .catch((err) => {
           console.log(
             JSON.parse(err.response.request.response).originalError.info.message
           );
         });
+
+      // this.axios
+      //   .get("/downloadtest", {})
+      //   .then((response) => {
+      //     const url = window.URL.createObjectURL(new Blob([response.data]));
+      //     const link = document.createElement("a");
+      //     link.href = url;
+      //     link.setAttribute("download", "file.pdf");
+      //     document.body.appendChild(link);
+      //     link.click();
+      //   })
+      //   .catch((err) => {
+      //     console.log(
+      //       JSON.parse(err.response.request.response).originalError.info.message
+      //     );
+      //   });
     },
     codeToProvince(code) {
       return this.$data.AdministrativeDistrict.province.filter(

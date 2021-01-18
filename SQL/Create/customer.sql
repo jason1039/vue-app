@@ -8,5 +8,5 @@ create table customer
     customertown[char](6) not null,
     customeraddr[varchar](100) not null default '',
     createdate[date] not null default getdate(),
-    del_falg[char] not null default 'N'
+    del_flag[char] not null default 'N'
 )
