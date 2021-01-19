@@ -1,0 +1,355 @@
+{
+    "樣式解析": {
+        "workbookAttr": {
+            "creator(建立者)": "Me",
+            "lastModifiedBy(最後修改者)": "Her",
+            "created(建立時間)": "2020-12-03",
+            "modified(最後編輯時間)": "2021-01-19",
+            "lastPrinted(最後輸出時間)": "2021-01-19"
+        },
+        "sheets(工作表清單)": {
+            "sheet1(工作表名稱)": {
+                "state(工作表狀態)[visible(使工作表可见),hidden(隐藏工作表),veryHidden(从“隐藏/取消隐藏”对话框中隐藏工作表)]": "visible",
+                "attr(工作表屬性)": {
+                    "tabColor(标签的颜色(ARGB))": "undefined",
+                    "outlineLevelCol(工作表列大纲级别(int))": 0,
+                    "outlineLevelRow(工作表行大纲级别(int))": 0,
+                    "defaultRowHeight(默认行高(int))": 15,
+                    "defaultColWidth(默认列宽(int))": "undefined",
+                    "dyDescent(TBD(int))": "undefined",
+                    "rowCount(文档的总行数。 等于具有值的最后一行的行号。(int))": "undefined",
+                    "actualRowCount(具有值的行数的计数。 如果中间文档行为空，则该行将不包括在计数中。(int))": "undefined",
+                    "columnCount(文档的总列数。 等于所有行的最大单元数。(int))": "undefined",
+                    "actualColumnCount(具有值的列数的计数。(int))": "undefined"
+                },
+                "pageSetup(頁面設置)": {
+                    "margins(页面上的空白边距。 单位为英寸。)": {
+                        "left": 0.7,
+                        "right": 0.7,
+                        "top": 0.75,
+                        "bottom": 0.75,
+                        "header": 0.3,
+                        "footer": 0.3
+                    },
+                    "orientation(页面方向 - 即较高 ('portrait') 或者较宽 ('landscape'))": "portrait",
+                    "horizontalDpi(水平方向上的 DPI。默认值为 -1)": 4294967295,
+                    "verticalDpi(垂直方向上的 DPI。默认值为 -1)": 4294967295,
+                    "fitToPage(是否使用 fitToWidth 和 fitToHeight 或 scale 设置。默认基于存在于 pageSetup 对象中的设置-如果两者都存在，则 scale 优先级高（默认值为 false）。)": false,
+                    "pageOrder(打印页面的顺序[downThenOver, overThenDown]之一)": "downThenOver",
+                    "blackAndWhite(无色打印)": false,
+                    "draft(打印质量较低（墨水）)": false,
+                    "cellComments(在何处放置批注[atEnd, asDisplayed, None]中的一个)": "None",
+                    "errors(哪里显示错误[dash, blank, NA, displayed'] 之一)": "displayed",
+                    "scale(增加或减小打印尺寸的百分比值。 当 fitToPage 为 false 时激活)": 100,
+                    "fitToWidth(纸张应打印多少页宽。 当 fitToPage 为 true 时激活)": 1,
+                    "fitToHeight(纸张应打印多少页高。 当 fitToPage 为 true 时激活)": 1,
+                    "paperSize(使用哪种纸张尺寸[undefined(Letter), 5(Legal), 7(Exceutive), 8(A3), 9(A4), 11(A5), 13(B5(JIS)), 20(Envelope #10), 27(Envelope DL), 28(Envelope C5), 34(Envelope B5), 37(Envelope Monarch), 82(Double Japan Postcard Rotated), 119(16K 197x273 mm)])": 9,
+                    "showRowColHeaders(是否显示行号和列字母)": false,
+                    "showGridLines(是否显示网格线)": false,
+                    "firstPageNumber(第一页使用哪个页码)": 1,
+                    "horizontalCentered(是否将工作表数据水平居中)": false,
+                    "verticalCentered(是否将工作表数据垂直居中)": false
+                },
+                "headerFooter(页眉和页脚)": {
+                    "//腳本命令": [
+                        "&L(将位置设定在左侧)",
+                        "&C(将位置设置在中心)",
+                        "&R(将位置设定在右边)",
+                        "&P(当前页码)",
+                        "&N(总页数)",
+                        "&D(当前日期)",
+                        "&T(当前时间)",
+                        "&G(照片)",
+                        "&A(工作表名称)",
+                        "&F(文件名称)",
+                        "&B(加粗文本)",
+                        "&I(斜体文本)",
+                        "&U(文本下划线)",
+                        "&'font name'(字体名称，例如＆“ Aril”)",
+                        "&font size(字体大小，例如12)",
+                        "&KHEXCode(字体颜色，例如 &KCCCCCC)"
+                    ],
+                    "differentFirst(将 differentFirst 的值设置为 true，这表示第一页的页眉/页脚与其他页不同)": false,
+                    "differentOddEven(将 differentOddEven 的值设置为 true，表示奇数页和偶数页的页眉/页脚不同)": false,
+                    "oddHeader(设置奇数（默认）页面的标题字符串，可以设置格式化字符串)": null,
+                    "oddFooter(设置奇数（默认）页面的页脚字符串，可以设置格式化字符串)": null,
+                    "evenHeader(设置偶数页的标题字符串，可以设置格式化字符串)": null,
+                    "evenFooter(为偶数页设置页脚字符串，可以设置格式化字符串)": null,
+                    "firstHeader(设置首页的标题字符串，可以设置格式化字符串)": null,
+                    "firstFooter(设置首页的页脚字符串，可以设置格式化字符串)": null
+                },
+                "views": {
+                    "state(控制视图状态 - 'normal', 'frozen(凍結)' 或者 'split(拆分)' 之一)": "normal",
+                    "rightToLeft(将工作表视图的方向设置为从右到左)": false,
+                    "activeCell(当前选择的单元格)": "undefined",
+                    "showRuler(在页面布局中显示或隐藏标尺)": true,
+                    "showRowColHeaders(显示或隐藏行标题和列标题（例如，顶部的 A1，B1 和左侧的1,2,3）)": true,
+                    "showGridLines(显示或隐藏网格线（针对未定义边框的单元格显示）)": true,
+                    "zoomScale(用于视图的缩放比例)": 100,
+                    "zoomScaleNormal(正常缩放视图)": 100,
+                    "style(演示样式- pageBreakPreview 或 pageLayout 之一。 注意：页面布局与 frozen 视图不兼容)": "undefined",
+                    "state(frozem)xSplit(冻结多少列。要仅冻结行，请将其设置为 0 或 undefined)": 0,
+                    "state(frozem)ySplit(冻结多少行。要仅冻结列，请将其设置为 0 或 undefined)": 0,
+                    "state(frozem)activeCell(開始欄位)": "A1",
+                    "state(frozem)topLeftCell(哪个单元格将在右下窗格中的左上角。注意：不能是冻结单元格。默认为第一个未冻结的单元格)": "special",
+                    "state(split)xSplit(从左侧多少个点起，以放置拆分器。要垂直拆分，请将其设置为 0 或 undefined)": 0,
+                    "state(split)ySplit(从顶部多少个点起，放置拆分器。要水平拆分，请将其设置为 0 或 undefined)": 0,
+                    "state(split)activeCell(哪个窗格将处于活动状态-topLeft，topRight，bottomLeft 和 bottomRight 中的一个)": "undefined",
+                    "state(split)topLeftCell(哪个单元格将在右下窗格中的左上角。)": "undefined"
+                },
+                "autoFilter(自动筛选器)": {
+                    "from": {
+                        "row": 3,
+                        "column": 1
+                    },
+                    "to": {
+                        "row": 5,
+                        "column": 12
+                    }
+                },
+                "data": {}
+            }
+        }
+    },
+    "excelTest": {
+        "workbookAttr": {
+            "creator": "WeiJay",
+            "created": "2021-01-19",
+            "modified": "2021-01-19"
+        },
+        "sheets": {
+            "sheet_1": {
+                "state": "visible",
+                "attr": {
+                    "tabColor": "FF00FFFF",
+                    "defaultRowHeight": 15
+                },
+                "pageSetup": {
+                    "margins": {
+                        "left": 0.7,
+                        "right": 0.7,
+                        "top": 0.75,
+                        "bottom": 0.75,
+                        "header": 0.3,
+                        "footer": 0.3
+                    },
+                    "orientation": "portrait",
+                    "paperSize": 9,
+                    "showRowColHeaders": true,
+                    "showGridLines": true,
+                    "firstPageNumber": 1
+                },
+                "views": [
+                    {
+                        "state": "frozen",
+                        "xSplit": 12,
+                        "ySplit": 3,
+                        "activeCell": "A1"
+                    }
+                ],
+                "data": [
+                    [
+                        {
+                            "width": 5
+                        },
+                        {
+                            "width": 5
+                        },
+                        {
+                            "width": 10
+                        },
+                        {
+                            "width": 10
+                        },
+                        {
+                            "width": 8
+                        },
+                        {
+                            "width": 8
+                        },
+                        {
+                            "width": 7
+                        },
+                        {
+                            "width": 3
+                        },
+                        {
+                            "width": 7
+                        },
+                        {
+                            "width": 7
+                        },
+                        {
+                            "width": 5
+                        },
+                        {
+                            "width": 5
+                        }
+                    ],
+                    [
+                        {
+                            "height": 30
+                        },
+                        {
+                            "col": 1,
+                            "row": 1,
+                            "value": "真旺2020年09月庫存總表",
+                            "fs": 16,
+                            "ff": "宋体",
+                            "bl": true,
+                            "bg": "#F9F900",
+                            "cle": 12,
+                            "rle": 1,
+                            "note": {
+                                "text": "test",
+                                "margins": {
+                                    "insetmode": "custom",
+                                    "inset": [
+                                        0.25,
+                                        0.25,
+                                        0.35,
+                                        0.35
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    [
+                        {},
+                        {
+                            "col": 1,
+                            "row": 2,
+                            "value": "編號",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9,
+                            "cle": 1,
+                            "rle": 2
+                        },
+                        {
+                            "col": 2,
+                            "row": 2,
+                            "value": "原廠",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9,
+                            "cle": 1,
+                            "rle": 2
+                        },
+                        {
+                            "col": 3,
+                            "row": 2,
+                            "value": "品名",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9,
+                            "cle": 1,
+                            "rle": 2
+                        },
+                        {
+                            "col": 4,
+                            "row": 2,
+                            "value": "規格",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9,
+                            "cle": 1,
+                            "rle": 2
+                        },
+                        {
+                            "col": 5,
+                            "row": 2,
+                            "value": "上月庫存",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9,
+                            "cle": 1,
+                            "rle": 2
+                        },
+                        {
+                            "col": 6,
+                            "row": 2,
+                            "value": "上月金額",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9,
+                            "cle": 1,
+                            "rle": 2
+                        },
+                        {
+                            "col": 7,
+                            "row": 2,
+                            "value": "單價\rRMB",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 1,
+                            "fc": "#FF0000",
+                            "cle": 1,
+                            "rle": 2
+                        },
+                        {
+                            "col": 8,
+                            "row": 2,
+                            "value": "含稅",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9,
+                            "fc": "#FF0000",
+                            "cle": 1,
+                            "rle": 2
+                        },
+                        {
+                            "col": 9,
+                            "row": 2,
+                            "value": "總庫存",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9,
+                            "fc": "#FF0000",
+                            "cle": 1,
+                            "rle": 2
+                        },
+                        {
+                            "col": 10,
+                            "row": 2,
+                            "value": "本月庫存金額",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9,
+                            "cle": 1,
+                            "rle": 2
+                        },
+                        {
+                            "col": 11,
+                            "row": 2,
+                            "value": "本月累計",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9,
+                            "cle": 2,
+                            "rle": 1
+                        }
+                    ],
+                    [
+                        {},
+                        {
+                            "col": 11,
+                            "row": 3,
+                            "value": "進貨",
+                            "fs": 10,
+                            "bl": 1,
+                            "ff": 9
+                        },
+                        {
+                            "col": 12,
+                            "row": 3,
+                            "value": "出貨",
+                            "size": 10,
+                            "ff": 9
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+}

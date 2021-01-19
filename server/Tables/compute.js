@@ -1,6 +1,6 @@
 const Tables = require('./Tables.json');
 const sql = require('mssql');
-const config = require('./config.js');
+const config = require('../config.js');
 const { getWhereJoinString,
     getTables,
     getJoinCode,
@@ -15,7 +15,7 @@ const { getWhereJoinString,
     getSubTables,
     lockUpdateString,
     getUnDeleteJoinString,
-    unLockUpdateString } = require('./functionList.js');
+    unLockUpdateString } = require('../functionList.js');
 const { promises } = require('dns');
 //新增get用法
 function addAppGet(app, tableName) {

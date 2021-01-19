@@ -1,8 +1,13 @@
 //https://github.com/exceljs/exceljs/blob/HEAD/README_zh.md
+const tabColor = new Function('argb', 'return {argb:argb};');
+const paperSize = new Function('num', 'const worksheetPaperSize = new Set([5, 7, 8, 9, 11, 13, 20, 27, 28, 34, 37, 82, 119]);if(worksheetPaperSize.has(num))return num; else return 9;');
+
 const Excel = require('exceljs');
-const fontClass = new Set(['size', 'family', 'bold', 'italics', 'underline', 'color']);
-const alignmentClass = new Set(['align', 'vertical', 'shrinkToFit', 'wrapText']);
-const fillClass = new Set(['bgColor']);
+const workbookAttr = new Set([{ name: 'creator', type: String }, { name: 'lastModifiedBy', type: String }, { name: 'created', type: Date }, { name: 'modified', type: Date }, { name: 'lastPrinted', type: Date }])
+const worksheetState = new Set(['visible', 'hidden', 'veryHidden']);
+const worksheetAttr = new Set([{ name: 'tabColor', type: tabColor }, { name: 'outlineLevelCol', type: String }, { name: 'outlineLevelRow', type: Number }, { name: 'defaultRowHeight', type: Number }, { name: 'defaultColWidth', type: Number }, { name: 'dyDescent', type: String }, { name: 'rowCount', type: String }, { name: 'actualRowCount', type: String }, { name: 'columnCount', type: String }, { name: 'actualColumnCount', type: String }])
+const worksheetPageSetup = new Set([{ name: 'margins', type: Object }, { name: 'orientation', type: String }, { name: 'horizontalDpi', type: BigInt }, { name: 'verticalDpi', type: BigInt }, { name: 'fitToPage', type: Boolean }, { name: 'pageOrder', type: String }, { name: 'blackAndWhite', type: Boolean }, { name: 'draft', type: Boolean }, { name: 'cellComments', type: String }, { name: 'errors', type: String }, { name: 'scale', type: Number }, { name: 'fitToWidth', type: Number }, { name: 'fitToHeight', type: Number }, { name: 'paperSize', type: paperSize }, { name: 'showRowColHeaders', type: Boolean }, { name: 'showGridLines', type: Boolean }, { name: 'firstPageNumber', type: Number }, { name: 'horizontalCentered', type: Boolean }, { name: 'verticalCentered', type: Boolean }]);
+const worksheetViews = new Set([{ name: 'state', type: String }, { name: 'zoomScale', type: Number }, { name: 'rightToLeft', type: Boolean }, { name: 'activeCell', type: String }, { name: 'zoomScaleNormal', type: Number }, { name: 'showRuler', type: Boolean }, { name: 'style', type: String }, { name: 'showRowColHeaders', type: Boolean }, { name: 'showGridLines', type: Boolean }, { name: 'xSplit', type: Number }, { name: 'activeCell', type: String }, { name: 'ySplit', type: Number }, { name: 'topLeftCell', type: String }]);
 const excelTest = require('./excelTest.json');
 // createFillStyle : bg(背景顏色)RGB
 // createAlignmentStyle:vt(垂直), ht(水平), tb(换行), tr(旋转)
@@ -27,18 +32,49 @@ function main(res, excelObj) {
     //var sheet = workbook.addWorksheet('My Sheet', {properties: {showGridLines: false}});
     // 建立第一行第一列凍結的表格
     //var sheet = workbook.addWorksheet('My Sheet', {views:[{xSplit: 1, ySplit:1}]});
-    if (!excelObj) excelObj = excelTest;
+    if (!excelObj) excelObj = excelTest.excelTest;
     let workbook = new Excel.Workbook();
-    let sheets = {};
-    Object.keys(excelObj).forEach((sheetName, index) => {
-        sheets[sheetName] = workbook.addWorksheet(sheetName);
-        let worksheet = workbook.getWorksheet(index + 1);
-        setStyleAndValue(excelObj[sheetName], worksheet);
-        setMerge(excelObj[sheetName], worksheet);
-        setBorder(excelObj[sheetName], worksheet);
-        setHeightWidth(excelObj[sheetName], worksheet);
-        setNote(excelObj[sheetName], worksheet);
-    })
+    workbookAttr.forEach(attr => {
+        if (excelObj.workbookAttr[attr.name])
+            workbook[attr] = attr.type(excelObj.workbookAttr[attr.name]);
+    });
+    Object.keys(excelObj.sheets).forEach(sheetName => {
+        let state = excelObj.sheets[sheetName].state ? worksheetState.has(excelObj.sheets[sheetName].state) ? excelObj.sheets[sheetName].state : undefined : undefined;
+        let properties = {};
+        let pageSetup = {};
+        let views = [];
+        worksheetAttr.forEach(attr => {
+            if (excelObj.sheets[sheetName].attr[attr.name])
+                properties[attr.name] = attr.type(excelObj.sheets[sheetName].attr[attr.name]);
+        });
+        worksheetPageSetup.forEach(attr => {
+            if (excelObj.sheets[sheetName].pageSetup[attr.name])
+                pageSetup[attr.name] = attr.type(excelObj.sheets[sheetName].pageSetup[attr.name]);
+        });
+        excelObj.sheets[sheetName].views.forEach(item => {
+            views.push(item);
+        });
+        let worksheet = workbook.addWorksheet(sheetName);
+        worksheet.state = state;
+        worksheet.properties = properties;
+        worksheet.pageSetup = pageSetup;
+        worksheet.views = views;
+        let rowSetting = excelObj.sheets[sheetName].data.shift();
+
+        rowSetting.forEach((column, index) => {
+            worksheet.getColumn(index + 1).width = column.width;
+        });
+
+        excelObj.sheets[sheetName].data.forEach((row, index) => {
+            let thisRow = worksheet.getRow(index + 1);
+            let rowHeight = row.shift();
+            thisRow.height = rowHeight.height;
+            setStyleAndValue(row, worksheet);
+            setMerge(row, worksheet);
+            setBorder(row, worksheet);
+            setNote(row, worksheet);
+        });
+    });
     res.status(200);
     res.setHeader('Content-Type', 'application/octet-stream');
     res.setHeader(
@@ -48,23 +84,6 @@ function main(res, excelObj) {
     workbook.xlsx.write(res).then(() => {
         res.end();
     });
-}
-var exportExcel = exports.exportExcel = async function (luckysheet) { // 参数为luckysheet.getluckysheetfile()获取的对象
-    // 1.创建工作簿，可以为工作簿添加属性
-    const workbook = new Excel.Workbook()
-    // 2.创建表格，第二个参数可以配置创建什么样的工作表
-    luckysheet.every(function (table) {
-        if (table.data.length === 0) return true
-        const worksheet = workbook.addWorksheet(table.name)
-        // 3.设置单元格合并,设置单元格边框,设置单元格样式,设置值
-        setMerge(table.config.merge, worksheet);
-        setStyleAndValue(table.data, worksheet);
-        setBorder(table.config.borderInfo, worksheet);
-        return true
-    })
-    // 4.写入 buffer
-    const buffer = await workbook.xlsx.writeBuffer()
-    return buffer
 }
 
 var setNote = function (cellArr, worksheet) {
@@ -77,13 +96,6 @@ var setNote = function (cellArr, worksheet) {
                 lockText: true
             }
         }
-    });
-}
-
-var setHeightWidth = function (cellArr, worksheet) {
-    cellArr.forEach(cell => {
-        height(cell, worksheet);
-        width(cell, worksheet);
     });
 }
 
@@ -111,14 +123,6 @@ var setStyleAndValue = function (cellArr, worksheet) {
         target.alignment = alignment;
         target.value = value;
     });
-}
-
-var height = function (cell, worksheet) {
-    if (cell.height) worksheet.getRow(cell.row).height = cell.height;
-}
-
-var width = function (cell, worksheet) {
-    if (cell.width) worksheet.getColumn(cell.col).width = cell.width;
 }
 
 var fillConvert = function (bg = `#FFFFFF`) {
@@ -246,4 +250,6 @@ var borderConvert = function (borderType = 'border-all', style = 1, color = '#00
     }
     return border
 }
+
+
 module.exports = main;

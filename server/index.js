@@ -1,6 +1,5 @@
 require('./ResetTables.js');
-const stream = require('stream');
-const createExcel = require('./createExcel.js');
+const createExcel = require('./excel/createExcel.js');
 const bodyParser = require('body-parser');
 const express = require('express');
 const Tables = require('./Tables.json');
