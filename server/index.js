@@ -1,8 +1,8 @@
-require('./ResetTables.js');
+require('./Tables/ResetTables.js');
 const createExcel = require('./excel/createExcel.js');
 const bodyParser = require('body-parser');
 const express = require('express');
-const Tables = require('./Tables.json');
+const Tables = require('./Tables/Tables.json');
 const { addGet, addPost, addPatch, addPut, addgetObj, addDelete, addRecovery } = require('./compute.js');
 var app = express();
 app.use(bodyParser.json());

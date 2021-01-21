@@ -1,6 +1,6 @@
 const Tables = require('./Tables.json');
 const sql = require('mssql');
-const config = require('./config.js');
+const config = require('../config.js');
 //輸出WhereString
 function getWhereJoinString(joinCode, wheres, tables) {
     let wheres_ary = [];
