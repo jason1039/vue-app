@@ -3,7 +3,7 @@ const createExcel = require('./excel/createExcel.js');
 const bodyParser = require('body-parser');
 const express = require('express');
 const Tables = require('./Tables/Tables.json');
-const { addGet, addPost, addPatch, addPut, addgetObj, addDelete, addRecovery } = require('./compute.js');
+const { addGet, addPost, addPatch, addPut, addgetObj, addDelete, addRecovery } = require('./Tables/compute.js');
 var app = express();
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
