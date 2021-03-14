@@ -5,6 +5,7 @@
       <router-link to="/" tag="div">首頁</router-link>
       <router-link to="/about" tag="div">About</router-link>
       <router-link to="/Customer" tag="div">客戶</router-link>
+      <router-link to="/Product" tag="div">商品</router-link>
     </div>
     <router-view v-if="!welcome" />
   </div>
