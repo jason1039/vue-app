@@ -143,26 +143,26 @@ export default {
       //       JSON.parse(err.response.request.response).originalError.info.message
       //     );
       //   });
-      this.axios({
-        method: "get",
-        url: "/exceltest",
-        responseType: "blob",
-      })
-        .then((response) => {
-          if (!response.data) return;
-          let url = window.URL.createObjectURL(new Blob([response.data]));
-          let link = document.createElement("a");
-          link.style.display = "none";
-          link.href = url;
-          link.setAttribute("download", "excel.xlsx");
+      // this.axios({
+      //   method: "get",
+      //   url: "/exceltest",
+      //   responseType: "blob",
+      // })
+      //   .then((response) => {
+      //     if (!response.data) return;
+      //     let url = window.URL.createObjectURL(new Blob([response.data]));
+      //     let link = document.createElement("a");
+      //     link.style.display = "none";
+      //     link.href = url;
+      //     link.setAttribute("download", "excel.xlsx");
 
-          document.body.appendChild(link);
-          link.click();
-          this.download(response);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      //     document.body.appendChild(link);
+      //     link.click();
+      //     this.download(response);
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
     },
     codeToProvince(code) {
       return this.$data.AdministrativeDistrict.province.filter(

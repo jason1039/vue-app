@@ -1,1 +1,94 @@
-{"customer":{"Columns":["customerid","customername","customerprovince","customerarea","customercity","customertown","customeraddr","createdate","del_flag"],"Key":"customerid","ForeignTables":["customercontact"]},"customercontact":{"Columns":["customercontactid","customerid","contactpersonname","sex","agegroup","liqueur","smoke","sing","gifts","dwell","del_flag"],"Key":"customercontactid","ForeignTables":["customercontactnumbers","customercontactrelation"]},"customercontactnumbers":{"Columns":["customercontactnumberid","customercontactid","customercontactnumber","del_flag"],"Key":"customercontactnumberid","ForeignTables":[]},"customercontactrelation":{"Columns":["customerrelationid","customercontactid","relationcontent","relationdate","del_flag"],"Key":"customerrelationid","ForeignTables":[]}}
+{
+    "customer": {
+        "Columns": [
+            "customerid",
+            "customername",
+            "customerprovince",
+            "customerarea",
+            "customercity",
+            "customertown",
+            "customeraddr",
+            "createdate",
+            "del_flag"
+        ],
+        "Key": "customerid",
+        "ForeignTables": [
+            "customercontact"
+        ]
+    },
+    "customercontact": {
+        "Columns": [
+            "customercontactid",
+            "customerid",
+            "contactpersonname",
+            "sex",
+            "agegroup",
+            "liqueur",
+            "smoke",
+            "sing",
+            "gifts",
+            "dwell",
+            "del_flag"
+        ],
+        "Key": "customercontactid",
+        "ForeignTables": [
+            "customercontactnumbers",
+            "customercontactrelation"
+        ]
+    },
+    "customercontactnumbers": {
+        "Columns": [
+            "customercontactnumberid",
+            "customercontactid",
+            "customercontactnumber",
+            "del_flag"
+        ],
+        "Key": "customercontactnumberid",
+        "ForeignTables": []
+    },
+    "customercontactrelation": {
+        "Columns": [
+            "customerrelationid",
+            "customercontactid",
+            "relationcontent",
+            "relationdate",
+            "del_flag"
+        ],
+        "Key": "customerrelationid",
+        "ForeignTables": []
+    },
+    "product": {
+        "Columns": [
+            "productid",
+            "productname",
+            "parting",
+            "volume"
+        ],
+        "Key": "productid",
+        "ForeignTables": [
+            "productformat"
+        ]
+    },
+    "productformat": {
+        "Columns": [
+            "productformatid",
+            "productid",
+            "width",
+            "height",
+            "vol",
+            "defaultduration",
+            "official"
+        ],
+        "Key": "productformatid",
+        "ForeignTables": []
+    },
+    "warehouse": {
+        "Columns": [
+            "warehouseid",
+            "warehousename",
+            "icestore"
+        ],
+        "Key": "warehouseid",
+        "ForeignTables": []
+    }
+}

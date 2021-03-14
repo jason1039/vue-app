@@ -59,14 +59,24 @@ export default {
 }
 
 #nav {
+  height: 100%;
+  width: 222px;
+  clip-path: polygon(0 0, 90% 0, 100% 1%, 100% 6%, 90% 7%, 90% 100%, 0 100%);
   top: 0px;
-  left: 0px;
+  left: -199px;
   position: absolute;
   display: flex;
   flex-direction: column;
+  z-index: 9999;
+  background-color: #aaa;
+  fill: #aaa;
+}
+#nav:hover {
+  left: 0px;
 }
 
 #nav div {
+  left: 0;
   border: 1px solid;
   font-weight: bold;
   color: #2c3e50;
@@ -74,18 +84,18 @@ export default {
   height: 30px;
   text-align: center;
   line-height: 30px;
-  margin: auto;
+  background-color: white;
 }
 
 #nav div.router-link-exact-active {
-  background-color: #aaa;
+  background-color: cornflowerblue;
   color: #fff;
 }
 
 .view {
   position: absolute;
-  left: 250px;
-  width: 1000px;
+  /* left: 250px; */
+  width: 100%;
 }
 /* @media screen {
   .row {
