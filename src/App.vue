@@ -26,10 +26,8 @@ export default {
   methods: {
     update() {
       this.axios.get("/gitUpdate").catch((err) => {
-        console.log('123');
-        console.log(
-          JSON.parse(err.response.request.response).originalError.info.message
-        );
+        console.log("123");
+        console.log(err);
       });
     },
     // getDataTest() {

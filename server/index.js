@@ -38,9 +38,9 @@ app.get(`/downloadtest`, function (req, res) {
     res.download(file);
 });
 app.get(`/gitUpdate`, function (req, res) {
+    res.status(200);
     exec('git pull',
         function (error, stdout, stderr) {
-            res.status(200);
             console.log('stdout: ' + stdout);
             console.log('stderr: ' + stderr);
             if (error !== null) {
