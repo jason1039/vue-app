@@ -20,6 +20,7 @@ function getPort(port) {
         render: h => h(App)
       }).$mount('#app');
     } else {
+      console.log(port);
       port++;
       // getPort(port);
     }
