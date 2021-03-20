@@ -45,6 +45,7 @@ let child = exec('git pull',
             console.log('exec error: ' + error);
         }
     });
+let test = `123`;
 
 let port = 5050;
 function runServer(port) {
