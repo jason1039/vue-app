@@ -1,4 +1,5 @@
 require('./Tables/ResetTables.js');
+const exec = require('child_process').exec;
 const createExcel = require('./excel/createExcel.js');
 const bodyParser = require('body-parser');
 const express = require('express');
@@ -35,7 +36,15 @@ app.get(`/exceltest`, async function (req, res) {
 app.get(`/downloadtest`, function (req, res) {
     const file = `./src/assets/add.png`;
     res.download(file);
-});
+})
+let child = exec('git pull',
+    function (error, stdout, stderr) {
+        console.log('stdout: ' + stdout);
+        console.log('stderr: ' + stderr);
+        if (error !== null) {
+            console.log('exec error: ' + error);
+        }
+    });
 
 let port = 5050;
 function runServer(port) {
