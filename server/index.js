@@ -40,6 +40,7 @@ app.get(`/downloadtest`, function (req, res) {
 app.get(`/gitUpdate`, function (req, res) {
     exec('git pull',
         function (error, stdout, stderr) {
+            res.status(200);
             console.log('stdout: ' + stdout);
             console.log('stderr: ' + stderr);
             if (error !== null) {
