@@ -52,6 +52,9 @@ let port = 5050;
 function runServer(port) {
     app.listen(port, function () {
         console.log(`Server is running on :http://localhost:${port}/ `);
+        exec(`npm run serve`, function () {
+            console.log(`Vue is running`);
+        });
     }).on('error', () => {
         port++;
         runServer(port)
