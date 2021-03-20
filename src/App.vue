@@ -25,8 +25,8 @@ export default {
   },
   methods: {
     update() {
-      this.axios.get("/gitUpdate").catch((err) => {
-        console.log(err);
+      this.axios.get("/gitUpdate").catch(() => {
+        // console.log(err);
       });
     },
     // getDataTest() {
