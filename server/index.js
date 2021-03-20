@@ -36,16 +36,17 @@ app.get(`/exceltest`, async function (req, res) {
 app.get(`/downloadtest`, function (req, res) {
     const file = `./src/assets/add.png`;
     res.download(file);
-})
-let child = exec('git pull',
-    function (error, stdout, stderr) {
-        console.log('stdout: ' + stdout);
-        console.log('stderr: ' + stderr);
-        if (error !== null) {
-            console.log('exec error: ' + error);
-        }
-    });
-
+});
+app.get(`/gitUpdate`, function (req, res) {
+    exec('git pull',
+        function (error, stdout, stderr) {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+        });
+});
 let port = 5050;
 function runServer(port) {
     app.listen(port, function () {

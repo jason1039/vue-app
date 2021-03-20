@@ -6,6 +6,7 @@
       <router-link to="/about" tag="div">About</router-link>
       <router-link to="/Customer" tag="div">客戶</router-link>
       <router-link to="/Product" tag="div">商品</router-link>
+      <div @click="update()">Update</div>
     </div>
     <router-view v-if="!welcome" />
   </div>
@@ -23,6 +24,13 @@ export default {
     Welome,
   },
   methods: {
+    update() {
+      this.axios.get("/gitUpdate").catch((err) => {
+        console.log(
+          JSON.parse(err.response.request.response).originalError.info.message
+        );
+      });
+    },
     // getDataTest() {
     //   this.axios
     //     .post("/api/addCustomer", {
