@@ -21,11 +21,11 @@ function getPort(port) {
       }).$mount('#app');
     } else {
       port++;
-      getPort(port);
+      // getPort(port);
     }
   }).catch(() => {
     port++;
-    getPort(port);
+    // getPort(port);
   });
 }
 getPort(5050);
