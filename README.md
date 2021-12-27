@@ -1,4 +1,4 @@
-# father-app
+# vue-app
 
 ## Project setup
 ```
