@@ -87,7 +87,7 @@
   </div>
 </template>
 <script>
-import CustomerContactNumber from "./CustomerContactNumber.vue";
+import CustomerContactNumber from "../complex/CustomerContactNumber.vue";
 export default {
   name: "CustomerContact",
   props: {

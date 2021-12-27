@@ -39,22 +39,22 @@ app.get(`/downloadtest`, function (req, res) {
 });
 app.get(`/gitUpdate`, function (req, res) {
     res.status(200);
-    exec('git pull',
-        function (error, stdout, stderr) {
-            console.log('stdout: ' + stdout);
-            console.log('stderr: ' + stderr);
-            if (error !== null) {
-                console.log('exec error: ' + error);
-            }
-        });
+    // exec('git pull',
+    //     function (error, stdout, stderr) {
+    //         console.log('stdout: ' + stdout);
+    //         console.log('stderr: ' + stderr);
+    //         if (error !== null) {
+    //             console.log('exec error: ' + error);
+    //         }
+    //     });
 });
 let port = 5050;
 function runServer(port) {
     app.listen(port, function () {
         console.log(`Server is running on :http://localhost:${port}/ `);
-        exec(`npm run serve`, function () {
-            console.log(`Vue is running`);
-        });
+        // exec(`npm run serve`, function () {
+        //     console.log(`Vue is running`);
+        // });
     }).on('error', () => {
         port++;
         runServer(port)

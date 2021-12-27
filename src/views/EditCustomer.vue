@@ -95,11 +95,11 @@
 </template>
 <script>
 import province_city_china from "province-city-china/data";
-import chinaProvince from "../components/chinaProvince.vue";
-import chinaCity from "../components/chinaCity.vue";
-import chinaArea from "../components/chinaArea.vue";
-import chinaTown from "../components/chinaTown.vue";
-import CustomerContact from "../components/CustomerContact.vue";
+import chinaProvince from "../components/single/chinaProvince.vue";
+import chinaCity from "../components/single/chinaCity.vue";
+import chinaArea from "../components/single/chinaArea.vue";
+import chinaTown from "../components/single/chinaTown.vue";
+import CustomerContact from "../components/complex/CustomerContact.vue";
 export default {
   data() {
     return {
